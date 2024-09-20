@@ -9,7 +9,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Blank App"),
       ),
-      // Add the drawer here
+     
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -53,11 +53,20 @@ class MyHomePage extends StatelessWidget {
           ],
         ),
       ),
-      body: const Center(
-        child: Text(
-          'Welcome to Homepage!',
-          style: TextStyle(fontSize: 24),
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Logo
+          Image.asset(
+            'C:\Users\ashle\Flutter\flutter 3\cc206-aac_app\assets\logo.png', 
+            height: 100, // Height
+          ),
+          const SizedBox(height: 20), // Space between logo and text
+          const Text(
+            'Welcome to Homepage!',
+            style: TextStyle(fontSize: 24),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
