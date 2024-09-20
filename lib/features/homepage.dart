@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 
-class Homepage extends StatelessWidget{
-  const Homepage({super.key});
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-
-        ],
+      appBar: AppBar(
+        title: const Text("Blank App"),
+      ),
+      body: const Center(
+        child: Text(
+          'Hello, World!',
+          style: TextStyle(fontSize: 24),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed functionality here
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
