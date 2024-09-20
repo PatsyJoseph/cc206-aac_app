@@ -9,7 +9,6 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Blank App"),
       ),
-     
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -27,26 +26,23 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.home),
+              leading: const Icon(Icons.home),
               title: const Text('Home'),
               onTap: () {
-                // Navigate to Home or perform some action
                 Navigator.pop(context); // This closes the drawer
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
+              leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
-                // Navigate to Settings or perform some action
                 Navigator.pop(context); // This closes the drawer
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
+              leading: const Icon(Icons.logout),
               title: const Text('Logout'),
               onTap: () {
-                // Handle the logout action
                 Navigator.pop(context); // This closes the drawer
               },
             ),
@@ -58,7 +54,7 @@ class MyHomePage extends StatelessWidget {
         children: [
           // Logo
           Image.asset(
-            'C:\Users\ashle\Flutter\flutter 3\cc206-aac_app\assets\logo.png', 
+            'assets/logo.png', // Use a relative path
             height: 100, // Height
           ),
           const SizedBox(height: 20), // Space between logo and text
