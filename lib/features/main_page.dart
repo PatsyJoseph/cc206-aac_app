@@ -17,8 +17,7 @@ class _MainPageState extends State<MainPage> {
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Home"),
-            Text("About Us"),
+            Text("Main Page"),
           ],
         ),
         backgroundColor: const Color(0xFF6256CA),
@@ -43,7 +42,7 @@ class _MainPageState extends State<MainPage> {
               },
             ),
             const SizedBox(
-                height: 16), // Space between the search bar and GridView
+                height: 10), // Space between the search bar and GridView
             // Grid of buttons
             Expanded(
               child: GridView.builder(
@@ -93,7 +92,7 @@ class _MainPageState extends State<MainPage> {
                         // Add image to the first button, text for others
                         child: index == 0
                             ? Image.asset(
-                                'assets/images/tw.jpg') // Image for button 1
+                                'assets/images/hi.png') // Image for button 1
                             : Text(
                                 buttonLabel), // Button label for other buttons
                       ),
