@@ -1,5 +1,6 @@
+import 'package:cc206_aac_app/features/aboutUs.dart';
 import 'package:flutter/material.dart';
-import 'package:cc206_aac_app/features/homepage.dart';  // Correctly imports your homepage.dart file
+
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // Set MyHomePage as the home widget
-      home: const MyHomePage(),
+      home: AboutUsPage(),
     );
   }
 }

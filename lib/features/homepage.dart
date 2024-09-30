@@ -40,6 +40,13 @@ class MyHomePage extends StatelessWidget {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.group),
+              title: const Text('About Us'),
+              onTap: () {
+                Navigator.pop(context); // This closes the drawer
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
               onTap: () {
