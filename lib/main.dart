@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'features/main_page.dart'; // Import the main_page.dart file
+import 'package:cc206_aac_app/screens/splash_screen.dart'; 
+import 'features/main_page.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const SplashScreen(), // Set SplashScreen as the initial home
     );
   }
 }
