@@ -1,62 +1,34 @@
+// lib/main.dart
+/// Entry point for the AAC Device application.
+///
+/// This file initializes the app and sets up the main widget tree.
+library;
+
 import 'package:flutter/material.dart';
 
-import 'features/main_page.dart'; // Import the main_page.dart file
+import 'features/starting_page.dart'; // Import the StartingPage widget
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp()); // Start the application by running the MyApp widget
 }
 
+/// The root widget of the AAC Device application.
+
+/// This class sets up the MaterialApp with basic configurations like
+/// the title, theme, and initial screen.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AAC App',
+      title: 'AAC Device', // Application title displayed in task switcher
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.blue, // Set the primary theme color to blue
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _pages = [
-    const MainPage(), // This refers to the MainPage from the main_page.dart file
-    const Center(child: Text('Page 2')),
-    const Center(child: Text('Page 3')),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Main'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Page 2'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Page 3'),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
+      home: StartingPage(), // Display StartingPage as the first screen
+      debugShowCheckedModeBanner:
+          false, // Hide the debug banner in the top right corner
     );
   }
 }
