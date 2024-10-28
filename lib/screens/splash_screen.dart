@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               const Text(
-                'Click anywhere to start',
+                'Tap anywhere to start',
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
                   color: Color.fromARGB(255, 117, 117, 117),
