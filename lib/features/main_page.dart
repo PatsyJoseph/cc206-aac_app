@@ -12,8 +12,6 @@ import 'about_page.dart';
 import 'tutorial_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
-
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -30,18 +28,38 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   File? newItemImage;
   String? newItemSound;
 
+  // Zoom and pan control variables
+  TransformationController _transformationController =
+      TransformationController();
+  double _minScale = 1.0;
+  double _maxScale = 2.0;
+
   @override
   void initState() {
     super.initState();
     _loadButtons();
+
+    // Add a listener to reset transformation if zoomed out too far
+    _transformationController.addListener(_onTransformationChanged);
   }
 
   @override
   void dispose() {
+    _transformationController.removeListener(_onTransformationChanged);
+    _transformationController.dispose();
     for (var controller in _animationControllers) {
       controller.dispose();
     }
+    audioPlayer.dispose();
     super.dispose();
+  }
+
+// Method to reset the transformation if scale is below 1.0
+  void _onTransformationChanged() {
+    final double scale = _transformationController.value.getMaxScaleOnAxis();
+    if (scale < _minScale) {
+      _transformationController.value = Matrix4.identity();
+    }
   }
 
   Future<void> _loadButtons() async {
@@ -148,8 +166,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
         newItemImage = File(image.path);
@@ -169,7 +187,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
-  void _playItemSound(String? soundPath) async {
+  Future<void> _playItemSound(String? soundPath) async {
     if (soundPath != null && soundPath.isNotEmpty) {
       await audioPlayer.play(DeviceFileSource(soundPath));
     }
@@ -184,6 +202,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         actions: [
           IconButton(
@@ -329,6 +348,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         color: Colors.white,
         child: Column(
           children: [
+            // Non-zoomable top buttons
             Container(
               margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
               decoration: BoxDecoration(
@@ -463,65 +483,85 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
+            // Zoomable grid view
             Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 1,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                padding: EdgeInsets.all(10),
-                itemCount: buttons.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      if (activeButton == 'DELETE') {
-                        _toggleSelection(index);
-                      } else if (!buttons[index].isPlaceholder) {
-                        _playItemSound(buttons[index].soundPath);
-                      }
-                      _animateButton(index);
-                    },
-                    child: ScaleTransition(
-                      scale: Tween<double>(begin: 1.0, end: 1.1).animate(
-                        CurvedAnimation(
-                          parent: _animationControllers[index],
-                          curve: Curves.easeInOut,
+              child: SingleChildScrollView(
+                child: Container(
+                  color: Colors.white,
+                  child: InteractiveViewer(
+                    transformationController: _transformationController,
+                    minScale: _minScale,
+                    maxScale: _maxScale,
+                    boundaryMargin:
+                        EdgeInsets.all(0), // Prevent extra space around content
+                    child: Container(
+                      color: Colors.white,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 1,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
                         ),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: buttons[index].isSelected
-                              ? Color(0xFFD2D9F5)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(8.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: buttons[index].isPlaceholder
-                              ? Text(
-                                  buttons[index].text,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.black),
-                                )
-                              : buttons[index].imagePath != null
-                                  ? Image.file(File(buttons[index].imagePath!))
-                                  : Text(
-                                      buttons[index].text,
-                                      textAlign: TextAlign.center,
+                        padding: EdgeInsets.all(10),
+                        itemCount: buttons.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              if (activeButton == 'DELETE') {
+                                _toggleSelection(index);
+                              } else if (!buttons[index].isPlaceholder) {
+                                _playItemSound(buttons[index].soundPath);
+                              }
+                              _animateButton(index);
+                            },
+                            child: ScaleTransition(
+                              scale:
+                                  Tween<double>(begin: 1.0, end: 1.1).animate(
+                                CurvedAnimation(
+                                  parent: _animationControllers[index],
+                                  curve: Curves.easeInOut,
+                                ),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: buttons[index].isSelected
+                                      ? Color(0xFFD2D9F5)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.2),
+                                      blurRadius: 5,
+                                      offset: Offset(0, 3),
                                     ),
-                        ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: buttons[index].isPlaceholder
+                                      ? Text(
+                                          buttons[index].text,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(color: Colors.black),
+                                        )
+                                      : buttons[index].imagePath != null
+                                          ? Image.file(
+                                              File(buttons[index].imagePath!))
+                                          : Text(
+                                              buttons[index].text,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ],
