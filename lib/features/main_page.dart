@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dynamic Button Grid',
+      title: 'AAC App',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
