@@ -1,3 +1,4 @@
+// main_page.dart contains the core feature of the application, including the buttons used for communication.
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,12 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:animated_text_kit/animated_text_kit.dart'; //added this one
 
 import 'about_page.dart';
 import 'tutorial_page.dart';
 
 class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -29,38 +31,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   File? newItemImage;
   String? newItemSound;
 
-  // Zoom and pan control variables
-  TransformationController _transformationController =
-      TransformationController();
-  double _minScale = 1.0;
-  double _maxScale = 2.0;
-
   @override
   void initState() {
     super.initState();
     _loadButtons();
-
-    // Add a listener to reset transformation if zoomed out too far
-    _transformationController.addListener(_onTransformationChanged);
   }
 
   @override
   void dispose() {
-    _transformationController.removeListener(_onTransformationChanged);
-    _transformationController.dispose();
     for (var controller in _animationControllers) {
       controller.dispose();
     }
-    audioPlayer.dispose();
     super.dispose();
-  }
-
-// Method to reset the transformation if scale is below 1.0
-  void _onTransformationChanged() {
-    final double scale = _transformationController.value.getMaxScaleOnAxis();
-    if (scale < _minScale) {
-      _transformationController.value = Matrix4.identity();
-    }
   }
 
   Future<void> _loadButtons() async {
@@ -167,8 +149,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
         newItemImage = File(image.path);
@@ -188,7 +170,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
-  Future<void> _playItemSound(String? soundPath) async {
+  void _playItemSound(String? soundPath) async {
     if (soundPath != null && soundPath.isNotEmpty) {
       await audioPlayer.play(DeviceFileSource(soundPath));
     }
@@ -203,8 +185,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            color: Color(0xFF4D8FF8),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AboutPage()),
+              );
+            },
+          ),
+        ],
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -245,7 +238,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     style: TextStyle(fontSize: 18),
                   ),
                   onTap: () {
-                    // Tap gesture for Tutorial list item: Closes the drawer and navigates to the TutorialPage when tapped.
                     Navigator.pop(context);
                     Navigator.push(
                       context,
@@ -253,29 +245,76 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     );
                   },
                 ),
+                Divider(),
                 SizedBox(height: 16),
                 InkWell(
                   onTap: () {
                     setState(() {
-                      activeButton = 'About';
+                      activeButton = 'Action Words';
                     });
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AboutPage()),
-                    );
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: activeButton == 'About'
+                    color: activeButton == 'Action Words'
                         ? Color(0xFFD2D9F5)
                         : Colors.white,
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline),
+                        Icon(Icons.flash_on),
                         SizedBox(width: 10),
                         Text(
-                          'About',
+                          'Action Words',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      activeButton = 'Greetings';
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    color: activeButton == 'Greetings'
+                        ? Color(0xFFD2D9F5)
+                        : Colors.white,
+                    child: Row(
+                      children: [
+                        Icon(Icons.chat),
+                        SizedBox(width: 10),
+                        Text(
+                          'Greetings',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      activeButton = 'Names';
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    color: activeButton == 'Names'
+                        ? Color(0xFFD2D9F5)
+                        : Colors.white,
+                    child: Row(
+                      children: [
+                        Icon(Icons.person),
+                        SizedBox(width: 10),
+                        Text(
+                          'Names',
                           style: TextStyle(fontSize: 18),
                         ),
                       ],
@@ -301,7 +340,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Expanded(
-                    // Tap gesture for "ADD NEW" button: Sets the active button to "ADD NEW" and displays the form for adding a new item.
                     child: InkWell(
                       borderRadius: BorderRadius.circular(4.0),
                       onTap: () => _setActiveButton('ADD NEW'),
@@ -325,7 +363,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   ),
                   SizedBox(width: 10),
                   Expanded(
-                    // Tap gesture for "DELETE" button: Sets the active button to "DELETE" and displays the dropdown for deletion confirmation.
                     child: InkWell(
                       borderRadius: BorderRadius.circular(4.0),
                       onTap: () => _setActiveButton('DELETE'),
@@ -362,12 +399,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   children: [
                     ListTile(
                       title: Text('Pick Image'),
-                      onTap:
-                          _pickImage, // Tap gesture to open the image picker for selecting an image from local device
+                      onTap: _pickImage,
                     ),
                     ListTile(
-                      title: Text(
-                          'Pick Sound'), // Tap gesture to open the file picker for selecting mp3 file from local device.
+                      title: Text('Pick Sound'),
                       onTap: _pickSound,
                     ),
                     Row(
@@ -380,8 +415,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                               style: TextStyle(color: Colors.green),
                               textAlign: TextAlign.center,
                             ),
-                            onTap:
-                                _addNewItem, // Tap gesture to add the new item with the selected image and sound.
+                            onTap: _addNewItem,
                           ),
                         ),
                         Expanded(
@@ -393,8 +427,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             ),
                             onTap: () {
                               setState(() {
-                                isAddNewFormVisible =
-                                    false; // Tap gesture to hide the add new item form.
+                                isAddNewFormVisible = false;
                                 activeButton = '';
                               });
                             },
@@ -417,15 +450,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   children: [
                     ListTile(
                       title: Text('Confirm Delete'),
-                      onTap:
-                          _confirmDeletion, // Tap gesture to confirm the deletion of selected items.
+                      onTap: _confirmDeletion,
                     ),
                     ListTile(
                       title: Text('Cancel'),
                       onTap: () {
                         setState(() {
-                          isDropdownOpen =
-                              false; // Tap gesture to close the dropdown menu without taking action.
+                          isDropdownOpen = false;
                           activeButton = '';
                         });
                       },
@@ -433,88 +464,65 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-            // Zoomable grid view
             Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  color: Colors.white,
-                  child: InteractiveViewer(
-                    // InteractiveViewer: Enables pinch-to-zoom and pan gestures to allow scaling and dragging of the grid content.
-                    transformationController: _transformationController,
-                    minScale: _minScale,
-                    maxScale: _maxScale,
-                    boundaryMargin:
-                        EdgeInsets.all(0), // Prevent extra space around content
-                    child: Container(
-                      color: Colors.white,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 1,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 1,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                padding: EdgeInsets.all(10),
+                itemCount: buttons.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      if (activeButton == 'DELETE') {
+                        _toggleSelection(index);
+                      } else if (!buttons[index].isPlaceholder) {
+                        _playItemSound(buttons[index].soundPath);
+                      }
+                      _animateButton(index);
+                    },
+                    child: ScaleTransition(
+                      scale: Tween<double>(begin: 1.0, end: 1.1).animate(
+                        CurvedAnimation(
+                          parent: _animationControllers[index],
+                          curve: Curves.easeInOut,
                         ),
-                        padding: EdgeInsets.all(10),
-                        itemCount: buttons.length,
-                        itemBuilder: (context, index) {
-                          // Detects tap gestures on the grid item, toggling selection in delete mode, playing sound for valid items, and animating the button for feedback.
-                          return GestureDetector(
-                            onTap: () {
-                              // Handles tap interactions based on the current active button state.
-                              if (activeButton == 'DELETE') {
-                                _toggleSelection(index);
-                              } else if (!buttons[index].isPlaceholder) {
-                                _playItemSound(buttons[index].soundPath);
-                              }
-                              _animateButton(index);
-                            },
-                            child: ScaleTransition(
-                              scale:
-                                  Tween<double>(begin: 1.0, end: 1.1).animate(
-                                CurvedAnimation(
-                                  parent: _animationControllers[index],
-                                  curve: Curves.easeInOut,
-                                ),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: buttons[index].isSelected
-                                      ? Color(0xFFD2D9F5)
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: buttons[index].isPlaceholder
-                                      ? Text(
-                                          buttons[index].text,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(color: Colors.black),
-                                        )
-                                      : buttons[index].imagePath != null
-                                          ? Image.file(
-                                              File(buttons[index].imagePath!))
-                                          : Text(
-                                              buttons[index].text,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                ),
-                              ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: buttons[index].isSelected
+                              ? Color(0xFFD2D9F5)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(8.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              blurRadius: 5,
+                              offset: Offset(0, 3),
                             ),
-                          );
-                        },
+                          ],
+                        ),
+                        child: Center(
+                          child: buttons[index].isPlaceholder
+                              ? Text(
+                                  buttons[index].text,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.black),
+                                )
+                              : buttons[index].imagePath != null
+                                  ? Image.file(File(buttons[index].imagePath!))
+                                  : Text(
+                                      buttons[index].text,
+                                      textAlign: TextAlign.center,
+                                    ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],
