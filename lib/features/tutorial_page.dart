@@ -17,22 +17,22 @@ class _TutorialPageState extends State<TutorialPage> {
     // List of tutorial data (title, description, and icon).
     final List<Map<String, dynamic>> tutorials = [
       {
-        'title': 'Title Card 1',
+        'title': 'Hear it!',
         'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
-        'icon': Icons.add,
+            'Tap the button to play your recorded audio sounds. It allows you to communicate effectively by hearing your personalized audio cues, helping you express yourself with confidence.',
+        'icon': 'assets/images/tCard1.png',
       },
       {
-        'title': 'Title Card 2',
+        'title': 'Add your voice!',
         'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
-        'icon': Icons.add,
+            'Use the "Add New" button to add your own custom sounds. Personalize your communication by adding your unique expressions, making it easier to convey your thoughts and feelings.',
+        'icon': 'assets/images/tCard2.png',
       },
       {
-        'title': 'Title Card 3',
+        'title': 'Feel free to delete!',
         'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
-        'icon': Icons.add,
+            'Easily manage your sounds with the delete feature. Remove any audio you no longer need, ensuring your communication board stays relevant and up-to-date.',
+        'icon': 'assets/images/tCard3.png',
       },
     ];
 
@@ -46,13 +46,29 @@ class _TutorialPageState extends State<TutorialPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 40),
-                  const Text(
-                    'Tutorial',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4D8FF8),
-                    ),
+                  // Row for title and back button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Color(0xFF4D8FF8),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'How to Use Ulayaw?',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4D8FF8),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -64,7 +80,7 @@ class _TutorialPageState extends State<TutorialPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Linear Progress Indicator to show progress
+                  // Linear Progress Indicator
                   LinearProgressIndicator(
                     value: (_currentPage + 1) / tutorials.length,
                     backgroundColor: Colors.grey[200],
@@ -88,14 +104,11 @@ class _TutorialPageState extends State<TutorialPage> {
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CircleAvatar(
-                              radius: 80,
-                              backgroundColor: Colors.grey[200],
-                              child: Icon(
-                                tutorial['icon'],
-                                size: 72,
-                                color: Colors.grey[800],
-                              ),
+                            Image.asset(
+                              tutorial['icon'],
+                              width: 300, // Width
+                              height: 300, // Height
+                              fit: BoxFit.cover,
                             ),
                             const SizedBox(height: 24),
                             Text(
@@ -107,8 +120,7 @@ class _TutorialPageState extends State<TutorialPage> {
                             ),
                             const SizedBox(height: 8),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 24.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 24.0),
                               child: Text(
                                 tutorial['description']!,
                                 textAlign: TextAlign.center,
@@ -124,25 +136,6 @@ class _TutorialPageState extends State<TutorialPage> {
                     ),
                   ),
                 ],
-              ),
-            ),
-          ),
-          Positioned(
-            right: 20,
-            bottom: 20,
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFF4D8FF8),
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
               ),
             ),
           ),
