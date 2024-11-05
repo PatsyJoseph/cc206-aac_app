@@ -204,19 +204,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(Icons.info_outline),
-            color: Color(0xFF4D8FF8),
-            onPressed: () {
-              // Tap or press gesture for About icon: Navigates to the AboutPage when tapped.
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AboutPage()),
-              );
-            },
-          ),
-        ],
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -265,76 +252,29 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     );
                   },
                 ),
-                Divider(),
                 SizedBox(height: 16),
                 InkWell(
                   onTap: () {
                     setState(() {
-                      activeButton = 'Action Words';
+                      activeButton = 'About';
                     });
                     Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AboutPage()),
+                    );
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: activeButton == 'Action Words'
+                    color: activeButton == 'About'
                         ? Color(0xFFD2D9F5)
                         : Colors.white,
                     child: Row(
                       children: [
-                        Icon(Icons.flash_on),
+                        Icon(Icons.info_outline),
                         SizedBox(width: 10),
                         Text(
-                          'Action Words',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      activeButton = 'Greetings';
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: activeButton == 'Greetings'
-                        ? Color(0xFFD2D9F5)
-                        : Colors.white,
-                    child: Row(
-                      children: [
-                        Icon(Icons.chat),
-                        SizedBox(width: 10),
-                        Text(
-                          'Greetings',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      activeButton = 'Names';
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: activeButton == 'Names'
-                        ? Color(0xFFD2D9F5)
-                        : Colors.white,
-                    child: Row(
-                      children: [
-                        Icon(Icons.person),
-                        SizedBox(width: 10),
-                        Text(
-                          'Names',
+                          'About',
                           style: TextStyle(fontSize: 18),
                         ),
                       ],
