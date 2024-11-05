@@ -1,9 +1,3 @@
-// lib/features/starting_page.dart
-//
-// This file defines the StartingPage widget, which serves as the splash screen
-// for the application. It displays the app logo, title, and description, and
-// navigates to the MainPage after a brief delay.
-
 import 'package:flutter/material.dart';
 
 import 'main_page.dart'; // Import MainPage for navigation
@@ -11,68 +5,60 @@ import 'main_page.dart'; // Import MainPage for navigation
 /// StartingPage widget acts as a splash screen displayed when the app launches.
 ///
 /// It shows the app logo, title, and description before navigating to the
-/// MainPage after a 3-second delay.
+/// MainPage when tapped.
 class StartingPage extends StatefulWidget {
   @override
   _StartingPageState createState() => _StartingPageState();
 }
 
 class _StartingPageState extends State<StartingPage> {
-  @override
-  void initState() {
-    super.initState();
-    // Navigate to MainPage after 1 second
-    Future.delayed(Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainPage()),
-      );
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor:
-          Colors.white, // Set the background color of the page to white
-      body: Center(
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Center the content vertically
-          children: [
-            // Display the app logo as a circular blue icon
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.blue, // Logo background color
-                shape: BoxShape.circle, // Make the logo circular
-              ),
+    return GestureDetector( 
+      onTap: () {
+        // Navigate to MainPage when tapped
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage()),
+        );
+      },
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [const Color.fromARGB(255, 176, 234, 177), Colors.white],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
             ),
-            SizedBox(height: 20), // Add space below the logo
-            // Display the app title
-            Text(
-              'App Title',
-              style: TextStyle(
-                fontSize: 24, // Font size for the title
-                fontWeight: FontWeight.bold, // Bold font style
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 200,
+                height: 200,
               ),
-            ),
-            SizedBox(height: 10), // Add space below the title
-            // Display a brief description of the app
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 40.0), // Horizontal padding
-              child: Text(
-                'A brief description of the app goes here. It could be a tagline or purpose statement.',
-                textAlign: TextAlign.center, // Center the text
+              const SizedBox(height: 15),
+              const Text(
+                'Your voice beyond limits',
                 style: TextStyle(
-                  fontSize: 14, // Font size for the description
-                  color: Colors.grey, // Text color
+                  color: Colors.black,
+                  fontSize: 50,
                 ),
               ),
-            ),
-          ],
+              const Text('Tap anywhere to start',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Color.fromARGB(255, 117, 117, 117),
+                    fontSize: 15,
+                  )),
+            ],
+          ),
         ),
       ),
     );
