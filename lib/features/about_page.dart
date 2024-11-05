@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -49,14 +50,25 @@ class AboutPage extends StatelessWidget {
                         SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Text(
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at ultricies ex.",
+                          child: DefaultTextStyle(
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
-                            ),
-                          ),
+                            ), 
+                            child: AnimatedTextKit(
+                              repeatForever: true,
+                              isRepeatingAnimation: true,
+                              animatedTexts: [
+                                FadeAnimatedText(
+                                  'Ulalayaw is an AAC designed and built for Filipinos. By Filipinos, with a major focus on native and local languages',
+                                ),
+                                FadeAnimatedText(
+                                  'Ang Ulalayaw ay isang AAC app na inilikha ng Filipino para sa mga kapwa Filipino, na nakatingin sa ating sariling wika ',
+                                ),
+                              ]
+                              )
+                            )
                         ),
                       ],
                     ),
