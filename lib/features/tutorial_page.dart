@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
 /// A tutorial page with swipeable onboarding screens.
-class TutorialPage extends StatelessWidget {
+class TutorialPage extends StatefulWidget {
   const TutorialPage({super.key});
+
+  @override
+  _TutorialPageState createState() => _TutorialPageState();
+}
+
+class _TutorialPageState extends State<TutorialPage> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -10,17 +18,20 @@ class TutorialPage extends StatelessWidget {
     final List<Map<String, dynamic>> tutorials = [
       {
         'title': 'Title Card 1',
-        'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
+        'description':
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
         'icon': Icons.add,
       },
       {
         'title': 'Title Card 2',
-        'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
+        'description':
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
         'icon': Icons.add,
       },
       {
         'title': 'Title Card 3',
-        'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
+        'description':
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac orci mollis, dictum nisi sit amet, fringilla dui.',
         'icon': Icons.add,
       },
     ];
@@ -34,10 +45,9 @@ class TutorialPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: [
-                  // Title and description section at the top
                   const SizedBox(height: 40),
                   const Text(
-                    'Tutorial', // Main heading
+                    'Tutorial',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -53,28 +63,41 @@ class TutorialPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
+
+                  // Linear Progress Indicator to show progress
+                  LinearProgressIndicator(
+                    value: (_currentPage + 1) / tutorials.length,
+                    backgroundColor: Colors.grey[200],
+                    color: const Color(0xFF4D8FF8),
+                  ),
+                  const SizedBox(height: 16),
+
                   // Expanded PageView for swipeable tutorial screens
                   Expanded(
                     child: PageView.builder(
+                      controller: _pageController,
                       itemCount: tutorials.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
                       itemBuilder: (context, index) {
                         final tutorial = tutorials[index];
 
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Circle icon illustration
                             CircleAvatar(
                               radius: 80,
                               backgroundColor: Colors.grey[200],
                               child: Icon(
-                                tutorial['icon'], // Directly pass the icon data
+                                tutorial['icon'],
                                 size: 72,
                                 color: Colors.grey[800],
                               ),
                             ),
                             const SizedBox(height: 24),
-                            // Title
                             Text(
                               tutorial['title']!,
                               style: const TextStyle(
@@ -83,7 +106,6 @@ class TutorialPage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            // Description
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 24.0),
@@ -105,7 +127,6 @@ class TutorialPage extends StatelessWidget {
               ),
             ),
           ),
-          // Circular return button at the bottom right
           Positioned(
             right: 20,
             bottom: 20,
@@ -118,9 +139,9 @@ class TutorialPage extends StatelessWidget {
                 icon: const Icon(
                   Icons.arrow_back,
                   color: Colors.white,
-                ), // Back arrow icon
+                ),
                 onPressed: () {
-                  Navigator.of(context).pop(); // Navigate back to previous screen
+                  Navigator.of(context).pop();
                 },
               ),
             ),
