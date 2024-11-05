@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:animated_text_kit/animated_text_kit.dart'; //added this one
 
 import 'about_page.dart';
 import 'tutorial_page.dart';

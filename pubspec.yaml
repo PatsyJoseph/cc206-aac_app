@@ -16,6 +16,7 @@ dependencies:
   file_picker: ^8.1.2    # Add this for file selection support
   shared_preferences: ^2.0.15 # For storing persistent key-value pairs
   path_provider: ^2.0.11 # Access device file system paths
+  animated_text_kit: ^4.2.2 # for animating text
 
 dev_dependencies:
   flutter_test:
