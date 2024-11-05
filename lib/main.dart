@@ -9,15 +9,15 @@ import 'package:flutter/material.dart';
 import 'features/starting_page.dart'; // Import the StartingPage widget
 
 void main() {
-  runApp(MyApp()); // Start the application by running the MyApp widget
+  runApp(Ulayaw()); // Start the application by running the MyApp widget
 }
 
 /// The root widget of the AAC Device application.
 
 /// This class sets up the MaterialApp with basic configurations like
 /// the title, theme, and initial screen.
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Ulayaw extends StatelessWidget {
+  const Ulayaw({super.key});
 
   @override
   Widget build(BuildContext context) {
