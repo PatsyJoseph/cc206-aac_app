@@ -6,7 +6,9 @@ library;
 
 import 'package:flutter/material.dart';
 
+import 'features/about_page.dart'; // Import AboutPage
 import 'features/starting_page.dart'; // Import the StartingPage widget
+import 'features/tutorial_page.dart'; //Import TutorialPage
 
 void main() {
   runApp(Ulayaw()); // Start the application by running the MyApp widget
@@ -26,7 +28,12 @@ class Ulayaw extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue, // Set the primary theme color to blue
       ),
-      home: StartingPage(), // Display StartingPage as the first screen
+      initialRoute: '/', // Added initialRoute
+      routes: {
+        '/': (context) => StartingPage(), // Initial route as starting page
+        '/tutorial': (context) => TutorialPage(),
+        '/about': (context) => AboutPage(),
+      },
       debugShowCheckedModeBanner:
           false, // Hide the debug banner in the top right corner
     );
