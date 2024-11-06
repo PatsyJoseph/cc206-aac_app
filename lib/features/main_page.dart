@@ -8,8 +8,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'about_page.dart';
-import 'tutorial_page.dart';
+// import categories
+import '../screens/all.dart';
+import '../screens/category1.dart';
+import '../screens/category2.dart';
+import '../screens/category3.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -17,6 +20,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
+  late TabController _tabController; // for tab
   String activeButton = '';
   bool isDropdownOpen = false;
   bool isAddNewFormVisible = false;
@@ -38,6 +42,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _loadButtons();
+    _tabController = TabController(length: 4, vsync: this); // for tab
 
     // Add a listener to reset transformation if zoomed out too far
     _transformationController.addListener(_onTransformationChanged);
@@ -45,6 +50,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _tabController.dispose(); // for tab
     _transformationController.removeListener(_onTransformationChanged);
     _transformationController.dispose();
     for (var controller in _animationControllers) {
@@ -206,6 +212,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        bottom: TabBar(
+          // added for tab bar
+          controller: _tabController,
+          tabs: const [
+            Tab(icon: Icon(Icons.groups)),
+            Tab(icon: Icon(Icons.notification_important)),
+            Tab(icon: Icon(Icons.star)),
+            Tab(icon: Icon(Icons.select_all)),
+          ],
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: Color(0xFF4D8FF8),
+        ),
       ),
       drawer: FractionallySizedBox(
         widthFactor: 0.75,
@@ -244,25 +263,16 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     style: TextStyle(fontSize: 18),
                   ),
                   onTap: () {
-                    // Tap gesture for Tutorial list item: Closes the drawer and navigates to the TutorialPage when tapped.
+                    // Tap gesture for Tutorial list item: Closes the drawer and navigates to the TutorialPage when tapped
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TutorialPage()),
-                    );
+                    Navigator.pushNamed(context, '/tutorial');
                   },
                 ),
                 SizedBox(height: 16),
                 InkWell(
                   onTap: () {
-                    setState(() {
-                      activeButton = 'About';
-                    });
                     Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AboutPage()),
-                    );
+                    Navigator.pushNamed(context, '/about');
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -434,86 +444,91 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
             // Zoomable grid view
             Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  color: Colors.white,
-                  child: InteractiveViewer(
-                    // InteractiveViewer: Enables pinch-to-zoom and pan gestures to allow scaling and dragging of the grid content.
-                    transformationController: _transformationController,
-                    minScale: _minScale,
-                    maxScale: _maxScale,
-                    boundaryMargin:
-                        EdgeInsets.all(0), // Prevent extra space around content
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  SingleChildScrollView(
                     child: Container(
                       color: Colors.white,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 1,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
+                      child: InteractiveViewer(
+                        transformationController: _transformationController,
+                        minScale: _minScale,
+                        maxScale: _maxScale,
+                        boundaryMargin: EdgeInsets.all(0),
+                        child: Category1(
+                          buttons: buttons
+                              .where((button) =>
+                                  button.id.startsWith('category1_'))
+                              .toList(),
+                          onButtonTap: _playItemSound,
+                          isDeleteMode: activeButton == 'DELETE',
+                          onToggleSelection: _toggleSelection,
+                          animationControllers: _animationControllers,
                         ),
-                        padding: EdgeInsets.all(10),
-                        itemCount: buttons.length,
-                        itemBuilder: (context, index) {
-                          // Detects tap gestures on the grid item, toggling selection in delete mode, playing sound for valid items, and animating the button for feedback.
-                          return GestureDetector(
-                            onTap: () {
-                              // Handles tap interactions based on the current active button state.
-                              if (activeButton == 'DELETE') {
-                                _toggleSelection(index);
-                              } else if (!buttons[index].isPlaceholder) {
-                                _playItemSound(buttons[index].soundPath);
-                              }
-                              _animateButton(index);
-                            },
-                            child: ScaleTransition(
-                              scale:
-                                  Tween<double>(begin: 1.0, end: 1.1).animate(
-                                CurvedAnimation(
-                                  parent: _animationControllers[index],
-                                  curve: Curves.easeInOut,
-                                ),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: buttons[index].isSelected
-                                      ? Color(0xFFD2D9F5)
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      blurRadius: 5,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: buttons[index].isPlaceholder
-                                      ? Text(
-                                          buttons[index].text,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(color: Colors.black),
-                                        )
-                                      : buttons[index].imagePath != null
-                                          ? Image.file(
-                                              File(buttons[index].imagePath!))
-                                          : Text(
-                                              buttons[index].text,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
                       ),
                     ),
                   ),
-                ),
+                  SingleChildScrollView(
+                    child: Container(
+                      color: Colors.white,
+                      child: InteractiveViewer(
+                        transformationController: _transformationController,
+                        minScale: _minScale,
+                        maxScale: _maxScale,
+                        boundaryMargin: EdgeInsets.all(0),
+                        child: Category2(
+                          buttons: buttons
+                              .where((button) =>
+                                  button.id.startsWith('category2_'))
+                              .toList(),
+                          onButtonTap: _playItemSound,
+                          isDeleteMode: activeButton == 'DELETE',
+                          onToggleSelection: _toggleSelection,
+                          animationControllers: _animationControllers,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    child: Container(
+                      color: Colors.white,
+                      child: InteractiveViewer(
+                        transformationController: _transformationController,
+                        minScale: _minScale,
+                        maxScale: _maxScale,
+                        boundaryMargin: EdgeInsets.all(0),
+                        child: Category3(
+                          buttons: buttons
+                              .where((button) =>
+                                  button.id.startsWith('category3_'))
+                              .toList(),
+                          onButtonTap: _playItemSound,
+                          isDeleteMode: activeButton == 'DELETE',
+                          onToggleSelection: _toggleSelection,
+                          animationControllers: _animationControllers,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    child: Container(
+                      color: Colors.white,
+                      child: InteractiveViewer(
+                        transformationController: _transformationController,
+                        minScale: _minScale,
+                        maxScale: _maxScale,
+                        boundaryMargin: EdgeInsets.all(0),
+                        child: All(
+                          buttons: buttons,
+                          onButtonTap: _playItemSound,
+                          isDeleteMode: activeButton == 'DELETE',
+                          onToggleSelection: _toggleSelection,
+                          animationControllers: _animationControllers,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
