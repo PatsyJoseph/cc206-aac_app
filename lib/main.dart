@@ -4,19 +4,19 @@
 /// This file initializes the app and sets up the main widget tree.
 library;
 
+import 'package:Ulayaw/features/about_page.dart';
 import 'package:flutter/material.dart';
 
-import 'features/about_page.dart'; // Import AboutPage
-import 'features/starting_page.dart'; // Import the StartingPage widget
-import 'features/tutorial_page.dart'; //Import TutorialPage
+// Import all necessary dart files
+import 'features/main_page.dart';
+import 'features/tutorial_page.dart';
 import 'screens/all.dart';
 import 'screens/category1.dart';
 import 'screens/category2.dart';
 import 'screens/category3.dart';
 
 void main() {
-  runApp(Ulayaw()); // Start the application by running the MyApp widget
-}
+  runApp(Ulayaw());
 
 /// The root widget of the AAC Device application.
 
@@ -34,15 +34,37 @@ class Ulayaw extends StatelessWidget {
       ),
       initialRoute: '/', // Added initialRoute
       routes: {
-        '/': (context) => StartingPage(), // Initial route as starting page
+        '/': (context) => UlayawMainPage(), // Initial route as starting page
         '/tutorial': (context) => TutorialPage(),
         '/about': (context) => AboutPage(),
-        '/category1': (context) => Category1(), // First Tab
-        '/category2': (context) => Category2(), // Second Tab
-        '/category3': (context) => Category3(), // Third Tab
+        '/category1': (context) => Category1(
+              buttons: [],
+              onButtonPressed: (int) {},
+              onButtonLongPress: (int) {},
+              animationControllers: [],
+              isDeleteMode: false,
+            ), // First Category
+        '/category2': (context) => Category2(
+              buttons: [],
+              onButtonPressed: (int) {},
+              onButtonLongPress: (int) {},
+              animationControllers: [],
+              isDeleteMode: false,
+            ), // Second Category
+        '/category3': (context) => Category3(
+              buttons: [],
+              onButtonPressed: (int) {},
+              onButtonLongPress: (int) {},
+              animationControllers: [],
+              isDeleteMode: false,
+            ), // Third Category
         '/all': (context) => All(
               buttons: [],
-            ), // Fourth Tab
+              onButtonPressed: (int) {},
+              onButtonLongPress: (int) {},
+              animationControllers: [],
+              isDeleteMode: false,
+            ), // Tab containing buttons for all categories
       },
       debugShowCheckedModeBanner:
           false, // Hide the debug banner in the top right corner

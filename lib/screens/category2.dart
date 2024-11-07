@@ -1,95 +1,34 @@
+// category2.dart for interface of category 2 buttons
 import 'package:flutter/material.dart';
 
-// Define a ButtonItem model
-class ButtonItem {
-  String text;
-  String imagePath;
-  bool isSelected;
+import 'button_item.dart';
+import 'category_view.dart';
 
-  ButtonItem({
-    required this.text,
-    required this.imagePath,
-    this.isSelected = false,
-  });
-}
+class Category2 extends StatelessWidget {
+  final List<CategoryButtonItem> buttons;
+  final Function(int) onButtonPressed;
+  final Function(int)? onButtonLongPress;
+  final List<AnimationController> animationControllers;
+  final bool isDeleteMode;
 
-class Category2 extends StatefulWidget {
-  @override
-  _Category2State createState() => _Category2State();
-}
-
-class _Category2State extends State<Category2> {
-  // Initial empty list of buttons
-  List<ButtonItem> buttons = [];
-  bool isDeleteMode = false;
-
-  // Function to toggle selection mode
-  void _toggleSelection(int index) {
-    setState(() {
-      buttons[index].isSelected = !buttons[index].isSelected;
-    });
-  }
-
-  // Function to delete selected buttons
-  void _deleteSelectedButtons() {
-    setState(() {
-      buttons.removeWhere((button) => button.isSelected);
-    });
-  }
+  const Category2({
+    Key? key,
+    required this.buttons,
+    required this.onButtonPressed,
+    this.onButtonLongPress,
+    required this.animationControllers,
+    required this.isDeleteMode,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          if (isDeleteMode)
-            IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: _deleteSelectedButtons,
-            ),
-        ],
-      ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemCount: buttons.length,
-        itemBuilder: (context, index) {
-          final button = buttons[index];
-          return GestureDetector(
-            onTap: () {
-              if (isDeleteMode) {
-                _toggleSelection(index);
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                color: button.isSelected ? Colors.red.withOpacity(0.5) : null,
-              ),
-              child: Column(
-                children: [
-                  button.imagePath.isNotEmpty
-                      ? Image.asset(button.imagePath)
-                      : Container(),
-                  Text(button.text),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            isDeleteMode = !isDeleteMode; // Toggle delete mode
-          });
-        },
-        child: Icon(isDeleteMode ? Icons.cancel : Icons.delete),
-      ),
+    return CategoryView(
+      buttons: buttons,
+      category: 'category2',
+      onButtonPressed: onButtonPressed,
+      onButtonLongPress: onButtonLongPress,
+      animationControllers: animationControllers,
+      isDeleteMode: isDeleteMode,
     );
   }
 }
