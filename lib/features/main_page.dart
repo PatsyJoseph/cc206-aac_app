@@ -1,3 +1,14 @@
+/// main_page.dart is the core screen of the application that handles buttons,
+/// tab navigation, drawer navigation, and button management features.
+///
+/// Key features include:
+/// 1. Tab-based navigation for different button categories
+/// 2. Sound playback on button press
+/// 3. Button management (add/delete buttons)
+/// 4. Interactive viewing with zoom and pan capabilities
+/// 5. Persistent storage of button data from user added files/buttons
+
+// Importing necessary libraries
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,65 +19,96 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Importing necessary dart files
 import '../screens/all.dart';
+import '../screens/button_item.dart';
 import '../screens/category1.dart';
 import '../screens/category2.dart';
 import '../screens/category3.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+class UlayawMainPage extends StatefulWidget {
+  const UlayawMainPage({Key? key}) : super(key: key);
 
   @override
-  _MainPageState createState() => _MainPageState();
+  _UlayawMainPageState createState() => _UlayawMainPageState();
 }
 
-class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
+class _UlayawMainPageState extends State<UlayawMainPage>
+    with TickerProviderStateMixin {
+  // Controller for tab navigation: This controls switching between different categories
   late TabController _tabController;
-  String activeButton = '';
-  bool isDropdownOpen = false;
-  bool isAddNewFormVisible = false;
-  AudioPlayer audioPlayer = AudioPlayer();
-  String selectedCategory = 'all';
 
-  List<ButtonItem> buttons = [];
+  // Button Management State: This tracks if user is currently deleting buttons and the IDs of the
+  // buttons selected for deletion
+  bool ButtonDeleteMode = false;
+  List<String> selectedItemIds = [];
+
+  // Dialog state for adding new buttons
+  bool showAddNewDialog = false;
+
+  // Audio player instance for sound playback
+  AudioPlayer audioPlayer = AudioPlayer();
+
+  // Category Management: Tracks currently selected category and active button
+  String selectedCategory = 'all';
+  String activeButton = '';
+
+  // Button Data: Stores all button data and controls button press animation
+  List<CategoryButtonItem> buttons = [];
   List<AnimationController> _animationControllers = [];
 
+  // New Button Creation: Temporarili stores image and sound for new button added by user
   File? newItemImage;
   String? newItemSound;
 
+  // Interactive viewer control for zoom and pan functionality
   final TransformationController _transformationController =
       TransformationController();
   final double _minScale = 1.0;
   final double _maxScale = 2.0;
 
+  /// Initializes the state of the widget
+  /// Sets up controllers and loads saved buttons from user
   @override
   void initState() {
     super.initState();
-    _loadButtons();
+    _loadAddedButtons();
     _tabController = TabController(length: 4, vsync: this);
     _transformationController.addListener(_onTransformationChanged);
   }
 
+  // Method for lifecycle: Cleans up resources when a widget (button) is disposed
   @override
   void dispose() {
     _tabController.dispose();
     _transformationController.removeListener(_onTransformationChanged);
     _transformationController.dispose();
+    // Dispose all button animation controllers
     for (var controller in _animationControllers) {
       controller.dispose();
     }
+    // Dispose audio player
     audioPlayer.dispose();
     super.dispose();
   }
 
+  // Zoom and Pan Control: Allows the user to zoom and pan the section for the buttons
   void _onTransformationChanged() {
+    // Get current scale level from transformation matrix
     final double scale = _transformationController.value.getMaxScaleOnAxis();
     if (scale < _minScale) {
+      // Reset to minimum scale if zoomed out too far. This is needed to make sure
+      // that the button interface will go back to its standard size when zoomed out.
       _transformationController.value = Matrix4.identity();
+      // Limit maximum zoom level
+    } else if (scale > _maxScale) {
+      final Matrix4 matrix = Matrix4.copy(_transformationController.value);
+      matrix.scale(_maxScale / scale);
+      _transformationController.value = matrix;
     }
   }
 
-  Future<void> _loadButtons() async {
+  Future<void> _loadAddedButtons() async {
     final prefs = await SharedPreferences.getInstance();
     final buttonData = prefs.getStringList('buttons') ?? [];
 
@@ -74,21 +116,21 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       buttons = buttonData.isEmpty
           ? List.generate(
               12,
-              (index) => ButtonItem(
+              (index) => CategoryButtonItem(
                 id: 'placeholder_$index',
                 text: 'Button ${index + 1}',
                 isPlaceholder: true,
               ),
             )
           : buttonData
-              .map((item) => ButtonItem.fromJson(json.decode(item)))
+              .map((item) => CategoryButtonItem.fromJson(json.decode(item)))
               .toList();
     });
 
-    _initializeAnimationControllers();
+    _setupButtonAnimations();
   }
 
-  void _initializeAnimationControllers() {
+  void _setupButtonAnimations() {
     _animationControllers = List.generate(
       buttons.length,
       (index) => AnimationController(
@@ -105,12 +147,92 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     await prefs.setStringList('buttons', buttonData);
   }
 
-  void _setActiveButton(String buttonName) {
-    setState(() {
-      activeButton = (activeButton == buttonName) ? '' : buttonName;
-      isAddNewFormVisible = activeButton == 'ADD NEW';
-      isDropdownOpen = activeButton == 'DELETE';
-    });
+  Future<void> _showAddNewFormDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('Add New Button'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<String>(
+                      value: selectedCategory,
+                      dropdownColor: Colors.white,
+                      decoration: const InputDecoration(
+                        labelText: 'Select Category',
+                        labelStyle: TextStyle(color: Color(0xFF4D8FF8)),
+                        border: OutlineInputBorder(),
+                        fillColor: Colors.white,
+                        filled: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF4D8FF8)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF4D8FF8)),
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'all', child: Text('All')),
+                        DropdownMenuItem(
+                            value: 'category1', child: Text('Pangngalan')),
+                        DropdownMenuItem(
+                            value: 'category2', child: Text('Kilos')),
+                        DropdownMenuItem(
+                            value: 'category3', child: Text('Direksyon')),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value!;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    ListTile(
+                      title: const Text('Pick Image'),
+                      leading: const Icon(Icons.image),
+                      onTap: () async {
+                        await _pickImage();
+                        setState(() {});
+                      },
+                    ),
+                    ListTile(
+                      title: const Text('Pick Sound'),
+                      leading: const Icon(Icons.audio_file),
+                      onTap: () async {
+                        await _pickSound();
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child:
+                      const Text('Cancel', style: TextStyle(color: Colors.red)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _addNewButton();
+                  },
+                  child:
+                      const Text('Add', style: TextStyle(color: Colors.green)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _toggleSelection(int index) {
@@ -119,17 +241,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     });
   }
 
-  void _confirmDeletion() {
-    setState(() {
-      buttons.removeWhere((button) => button.isSelected);
-      activeButton = '';
-      isDropdownOpen = false;
-    });
-    _saveButtons();
-    _initializeAnimationControllers();
-  }
-
-  Future<void> _addNewItem() async {
+  Future<void> _addNewButton() async {
     if (newItemImage != null && newItemSound != null) {
       final directory = await getApplicationDocumentsDirectory();
       final String imagePath =
@@ -141,7 +253,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       await File(newItemSound!).copy(soundPath);
 
       setState(() {
-        buttons.add(ButtonItem(
+        buttons.add(CategoryButtonItem(
           id: 'custom_${buttons.length}',
           imagePath: imagePath,
           soundPath: soundPath,
@@ -150,14 +262,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         ));
         newItemImage = null;
         newItemSound = null;
-        isAddNewFormVisible = false;
-        activeButton = '';
       });
       _saveButtons();
-      _initializeAnimationControllers();
+      _setupButtonAnimations();
     }
   }
 
+  // Media Picker Method: Allows user to select image for new button from their local device
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -168,6 +279,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
+  // Sound Picker Method: Allows user to select mp3 file for new button from their local device
   Future<void> _pickSound() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -180,224 +292,84 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
+  // Audio Playback: Plays sound if path exists and is valid
   Future<void> _playItemSound(String? soundPath) async {
     if (soundPath != null && soundPath.isNotEmpty) {
       await audioPlayer.play(DeviceFileSource(soundPath));
     }
   }
 
-  void _animateButton(int index) {
+  // Button Animation: Creates animation for the button when it is pressed
+  void _animateButtonPress(int index) {
     _animationControllers[index].forward().then((_) {
       _animationControllers[index].reverse();
     });
   }
 
+  // UI Building methods
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        // App bar containing the icon for drawer, add, and delete buttons
         backgroundColor: Colors.white,
         elevation: 0,
-        title: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.groups)),
-            Tab(icon: Icon(Icons.notification_important)),
-            Tab(icon: Icon(Icons.star)),
-            Tab(icon: Icon(Icons.select_all)),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
+        actions: [
+          if (!ButtonDeleteMode) ...[
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline),
+              color: const Color(0xFF4D8FF8),
+              onPressed: _showAddNewFormDialog,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                setState(() {
+                  ButtonDeleteMode = true;
+                  selectedItemIds = [];
+                });
+              },
+            ),
+          ] else ...[
+            IconButton(
+              icon: const Icon(Icons.check),
+              color: const Color(0xFF4D8FF8),
+              onPressed: selectedItemIds.isNotEmpty
+                  ? _showDeleteConfirmationDialog
+                  : null,
+            ),
+            IconButton(
+              icon: const Icon(Icons.close),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                setState(() {
+                  ButtonDeleteMode = false;
+                  selectedItemIds = [];
+                  // Deselect all buttons
+                  for (var button in buttons) {
+                    button.isSelected = false;
+                  }
+                });
+              },
+            ),
           ],
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: const Color(0xFF4D8FF8),
-          isScrollable: false,
-        ),
-        bottom: PreferredSize(
-          preferredSize:
-              Size.fromHeight(isAddNewFormVisible || isDropdownOpen ? 250 : 60),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Action Buttons Row
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xFF4D8FF8)),
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(4.0),
-                        onTap: () => _setActiveButton('ADD NEW'),
-                        highlightColor: const Color(0xFFD2D9F5),
-                        splashColor: const Color(0xFFD2D9F5),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          decoration: BoxDecoration(
-                            color: activeButton == 'ADD NEW'
-                                ? const Color(0xFFD2D9F5)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: const Text(
-                            'ADD NEW',
-                            style: TextStyle(color: Colors.black),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(4.0),
-                        onTap: () => _setActiveButton('DELETE'),
-                        highlightColor: const Color(0xFFD2D9F5),
-                        splashColor: const Color(0xFFD2D9F5),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          decoration: BoxDecoration(
-                            color: activeButton == 'DELETE'
-                                ? const Color(0xFFD2D9F5)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: const Text(
-                            'DELETE',
-                            style: TextStyle(color: Colors.black),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Forms
-              if (isAddNewFormVisible)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFF4D8FF8)),
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: DropdownButtonFormField<String>(
-                          value: selectedCategory,
-                          decoration: const InputDecoration(
-                            labelText: 'Select Category',
-                            labelStyle: TextStyle(color: Color(0xFF4D8FF8)),
-                            border: OutlineInputBorder(),
-                          ),
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'all',
-                              child: Text('All'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'category1',
-                              child: Text('Category 1'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'category2',
-                              child: Text('Category 2'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'category3',
-                              child: Text('Category 3'),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              selectedCategory = value!;
-                            });
-                          },
-                        ),
-                      ),
-                      ListTile(
-                        title: const Text('Pick Image'),
-                        leading: const Icon(Icons.image),
-                        onTap: _pickImage,
-                      ),
-                      ListTile(
-                        title: const Text('Pick Sound'),
-                        leading: const Icon(Icons.audio_file),
-                        onTap: _pickSound,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            child: ListTile(
-                              title: const Text(
-                                'Add',
-                                style: TextStyle(color: Colors.green),
-                                textAlign: TextAlign.center,
-                              ),
-                              onTap: _addNewItem,
-                            ),
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              title: const Text(
-                                'Cancel',
-                                style: TextStyle(color: Colors.red),
-                                textAlign: TextAlign.center,
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  isAddNewFormVisible = false;
-                                  activeButton = '';
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              if (isDropdownOpen)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFF4D8FF8)),
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        title: const Text('Confirm Delete'),
-                        onTap: _confirmDeletion,
-                      ),
-                      ListTile(
-                        title: const Text('Cancel'),
-                        onTap: () {
-                          setState(() {
-                            isDropdownOpen = false;
-                            activeButton = '';
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
+          const SizedBox(width: 8),
+        ],
       ),
+      // Side navigation drawer: Contains the navigation to tutorial_page.dart and about_page.dart
       drawer: FractionallySizedBox(
         widthFactor: 0.75,
         child: Drawer(
@@ -460,61 +432,165 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          Category1(),
-          Category2(),
-          Category3(),
-          All(
-            buttons: [],
+          if (ButtonDeleteMode)
+            Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.blue.shade50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Select buttons to delete (${selectedItemIds.length} selected)',
+                    style: const TextStyle(color: Color(0xFF4D8FF8)),
+                  ),
+                ],
+              ),
+            ),
+          // Tab navigation bar: Contains the tabs for categories. This allows the navigation from one category to another
+          TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.select_all)),
+              Tab(icon: Icon(Icons.groups)),
+              Tab(icon: Icon(Icons.notification_important)),
+              Tab(icon: Icon(Icons.star)),
+            ],
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: const Color(0xFF4D8FF8),
+            isScrollable: false,
+          ),
+          // Main content area with buttons
+          Expanded(
+            child: InteractiveViewer(
+              transformationController: _transformationController,
+              minScale: _minScale,
+              maxScale: _maxScale,
+              boundaryMargin: const EdgeInsets.all(0),
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  All(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                  Category1(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                  Category2(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                  Category3(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
-}
 
-class ButtonItem {
-  final String id;
-  final String text;
-  final bool isPlaceholder;
-  String? imagePath;
-  String? soundPath;
-  bool isSelected;
-  String category;
-
-  ButtonItem({
-    required this.id,
-    required this.text,
-    this.isPlaceholder = false,
-    this.imagePath,
-    this.soundPath,
-    this.isSelected = false,
-    this.category = 'all',
-  });
-
-  factory ButtonItem.fromJson(Map<String, dynamic> json) {
-    return ButtonItem(
-      id: json['id'],
-      text: json['text'],
-      isPlaceholder: json['isPlaceholder'] ?? false,
-      imagePath: json['imagePath'],
-      soundPath: json['soundPath'],
-      isSelected: json['isSelected'] ?? false,
-      category: json['category'] ?? 'all',
-    );
+  // This allows user to select or toggle buttons for deletion
+  void _toggleDeleteSelection(int index) {
+    setState(() {
+      buttons[index].isSelected = !buttons[index].isSelected;
+      if (buttons[index].isSelected) {
+        selectedItemIds.add(buttons[index].id);
+      } else {
+        selectedItemIds.remove(buttons[index].id);
+      }
+    });
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'text': text,
-      'isPlaceholder': isPlaceholder,
-      'imagePath': imagePath,
-      'soundPath': soundPath,
-      'isSelected': isSelected,
-      'category': category,
-    };
+  // Deletes all selected buttons or toggled buttons.
+  Future<void> _deleteConfirmedButtons() async {
+    setState(() {
+      buttons.removeWhere((button) => selectedItemIds.contains(button.id));
+      ButtonDeleteMode = false;
+      selectedItemIds = [];
+    });
+    await _saveButtons();
+    _setupButtonAnimations();
+  }
+
+  Future<void> _showDeleteConfirmationDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('Confirm Delete'),
+          content: Text(
+              'Are you sure you want to delete ${selectedItemIds.length} selected button${selectedItemIds.length > 1 ? 's' : ''}?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.green)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteConfirmedButtons();
+              },
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
