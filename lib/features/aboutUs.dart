@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,8 +18,114 @@ class MyApp extends StatelessWidget {
 
 /// AboutPage widget displays information about the app and its team,
 /// including sections for 'About Us' and 'Meet the Team'.
-class AboutUs extends StatelessWidget {
+class AboutUs extends StatefulWidget {
   const AboutUs({super.key});
+
+  @override 
+  State<AboutUs> createState() => _AboutUsState();
+
+  }
+
+class _AboutUsState extends State<AboutUs> {
+  final PageController _controller = PageController(initialPage: 0);
+  int _currentPage = 0;
+  
+
+  final List<Widget> _pages = [
+      const Ulalayaw(),
+      const Team(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                  // Row for title and back button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Color(0xFF4D8FF8),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                 const Text(
+                    'About Us',
+                    style: TextStyle(
+                    fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
+                  ),
+                const Text(
+                  'Learn More About Ulalayaw',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 151, 151, 151),
+                  ),
+                 ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Swipe to meet our contributors.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Linear Progress Indicator
+                  LinearProgressIndicator(
+                    value: (_currentPage + 1) / _pages.length,
+                    backgroundColor: Colors.grey[200],
+                    color: const Color(0xFF4D8FF8),
+                  ),
+                  const SizedBox(height: 16),
+
+                Expanded (
+                  child: PageView.builder(
+                    controller: _controller,
+                    onPageChanged: (int page) {
+                      setState(() {
+                        _currentPage = page;
+                      });
+                    },
+                    itemCount: _pages.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return _pages[index % _pages.length];
+                    }
+                  )
+                )    
+              ]
+                
+              ),
+            
+          )
+        ),
+        ],
+      )
+    );
+  }
+ }
+
+class Ulalayaw extends StatelessWidget {
+  const Ulalayaw({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,126 +133,38 @@ class AboutUs extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  // About Us Section
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 80),
-                    color: Color(0xFF4D8FF8), // Blue background
-                    child: Column(
-                      children: [
-                        Text(
-                          "About Us",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 24.0),
-                            child: DefaultTextStyle(
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                                child: AnimatedTextKit(
-                                    repeatForever: true,
-                                    isRepeatingAnimation: true,
-                                    animatedTexts: [
-                                      FadeAnimatedText(
-                                        'Ulalayaw is an AAC designed and built for Filipinos. By Filipinos, with a major focus on native and local languages',
-                                      ),
-                                      FadeAnimatedText(
-                                        'Ang Ulalayaw ay isang AAC app na inilikha ng Filipino para sa mga kapwa Filipino, na nakatingin sa ating sariling wika ',
-                                      ),
-                                    ]))),
-                      ],
-                    ),
-                  ),
-
-                  // Meet the Team Section
-                  SizedBox(height: 40),
-                  Text(
-                    "Meet the Team", // Changed from "The Team" to "Meet the Team"
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4D8FF8),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-
-                  // Team Members as Grid with 2 items per row
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 20,
-                        mainAxisSpacing: 20,
-                        childAspectRatio: 0.8,
-                      ),
-                      itemCount: 5, // Number of team members
-                      itemBuilder: (context, index) {
-                        return _buildTeamMember(index);
-                      },
-                    ),
-                  ),
-
-                  SizedBox(height: 40),
-
-                  // Footer Text
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Text(
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at ultricies ex.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-
-                  // Add extra padding at the bottom to ensure the floating button doesn't obscure content
-                  SizedBox(height: 80),
-                ],
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/logo.png',
+                width: 200,
+                height: 200,
               ),
-            ),
-          ),
-          // Circular Return Button on Right
-          Positioned(
-            right: 20,
-            bottom: 20,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFF4D8FF8),
+              const SizedBox(height: 15),
+              const Text(
+                "Ulalayaw is a Project Based Alternative and Augmentative Communication (AAC) Application centered around the Filipino Language, created by 3rd Year Computer Science students of West Visayas State University. The Concept of Ulalayaw came from the Word's meaning, which refers to being in a state of closeness to a person, and provides support and companionship to said person",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                ),
               ),
-              child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  Navigator.of(context)
-                      .pop(); // Navigate back to the previous screen
-                },
-              ),
-            ),
+            ],
           ),
         ],
-      ),
+      )
     );
   }
+}
 
-  /// Helper function to create team member widgets with images and details.
-  Widget _buildTeamMember(int index) {
-    // Dummy data for team members
-    final teamMembers = [
+class Team extends StatelessWidget {
+  const Team({super.key});
+  
+
+  @override
+  Widget build(BuildContext context) {
+     final teamMembers = [
       {
         'name': 'John Doe',
         'email': 'john.doe@example.com',
@@ -176,18 +193,37 @@ class AboutUs extends StatelessWidget {
     ];
 
     // Extract data for the current team member
-    final member = teamMembers[index];
-
-    return Column(
+     
+   return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Meet The Team',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ),
+      Expanded(child: GridView.builder(
+      itemCount: teamMembers.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.8,
+        ),
+        itemBuilder: (context, index) {
+         final member = teamMembers[index];
+         return Column(
       children: [
         // Circle Avatar with Image
+        
         Container(
           width: 100,
           height: 100,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             image: DecorationImage(
-              image: AssetImage('assets/about_page/trial.jpg'),
+              image: AssetImage('assets/trial.jpg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -224,5 +260,11 @@ class AboutUs extends StatelessWidget {
         ),
       ],
     );
+      },
+    )
+      )
+    ],
+   );
+    
   }
 }
