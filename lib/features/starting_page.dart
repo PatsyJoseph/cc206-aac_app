@@ -12,16 +12,14 @@ class StartingPage extends StatefulWidget {
 }
 
 class _StartingPageState extends State<StartingPage> {
-
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( 
+    return GestureDetector(
       onTap: () {
         // Navigate to MainPage when tapped
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MainPage()),
+          MaterialPageRoute(builder: (context) => UlayawMainPage()),
         );
       },
       child: Scaffold(

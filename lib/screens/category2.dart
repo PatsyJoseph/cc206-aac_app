@@ -22,13 +22,15 @@ class Category2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CategoryView(
-      buttons: buttons,
-      category: 'category2',
-      onButtonPressed: onButtonPressed,
-      onButtonLongPress: onButtonLongPress,
-      animationControllers: animationControllers,
-      isDeleteMode: isDeleteMode,
+    return Expanded(
+      child: CategoryView(
+        buttons: buttons,
+        category: 'category2',
+        onButtonPressed: onButtonPressed,
+        onButtonLongPress: onButtonLongPress,
+        animationControllers: animationControllers,
+        isDeleteMode: isDeleteMode,
+      ),
     );
   }
 }

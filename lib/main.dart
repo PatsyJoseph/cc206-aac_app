@@ -4,7 +4,7 @@
 /// This file initializes the app and sets up the main widget tree.
 library;
 
-import 'package:Ulayaw/features/about_page.dart';
+import 'package:Ulayaw/features/aboutUs.dart';
 import 'package:flutter/material.dart';
 
 // Import all necessary dart files
@@ -18,10 +18,12 @@ import 'screens/category3.dart';
 void main() {
   runApp(Ulayaw());
 
-/// The root widget of the AAC Device application.
+  /// The root widget of the AAC Device application.
 
-/// This class sets up the MaterialApp with basic configurations like
-/// the title, theme, and initial screen.
+  /// This class sets up the MaterialApp with basic configurations like
+  /// the title, theme, and initial screen.
+}
+
 class Ulayaw extends StatelessWidget {
   const Ulayaw({super.key});
 
@@ -36,7 +38,7 @@ class Ulayaw extends StatelessWidget {
       routes: {
         '/': (context) => UlayawMainPage(), // Initial route as starting page
         '/tutorial': (context) => TutorialPage(),
-        '/about': (context) => AboutPage(),
+        '/about': (context) => AboutUs(),
         '/category1': (context) => Category1(
               buttons: [],
               onButtonPressed: (int) {},

@@ -1,4 +1,3 @@
-// category_view.dart contains the interface, mainly grid view widget used for each category
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -25,6 +24,7 @@ class CategoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Filter buttons based on category
     final filteredButtons = category == 'all'
         ? buttons
         : buttons.where((button) => button.category == category).toList();
@@ -42,11 +42,19 @@ class CategoryView extends StatelessWidget {
         final button = filteredButtons[index];
         final originalIndex = buttons.indexOf(button);
 
+        // Ensure we have a valid animation controller index
+        final hasValidAnimationController =
+            originalIndex >= 0 && originalIndex < animationControllers.length;
+
         return AnimatedBuilder(
-          animation: animationControllers[originalIndex],
+          animation: hasValidAnimationController
+              ? animationControllers[originalIndex]
+              : const AlwaysStoppedAnimation(0.0),
           builder: (context, child) {
             return Transform.scale(
-              scale: 1.0 + animationControllers[originalIndex].value * 0.1,
+              scale: hasValidAnimationController
+                  ? 1.0 + animationControllers[originalIndex].value * 0.1
+                  : 1.0,
               child: Stack(
                 children: [
                   GestureDetector(
@@ -60,14 +68,13 @@ class CategoryView extends StatelessWidget {
                             ? Colors.blue.withOpacity(0.2)
                             : Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
                       ),
                       child: Center(
-                        child: button.imagePath != null
-                            ? Image.file(
-                                File(button.imagePath!),
-                                fit: BoxFit.cover,
-                              )
-                            : Text(button.text),
+                        child: _buildButtonContent(button),
                       ),
                     ),
                   ),
@@ -86,6 +93,67 @@ class CategoryView extends StatelessWidget {
           },
         );
       },
+    );
+  }
+
+  Widget _buildButtonContent(CategoryButtonItem button) {
+    if (button.imagePath == null) {
+      return Text(
+        button.text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+    }
+
+    try {
+      // Check if the image path is a file path
+      if (button.imagePath!.startsWith('/')) {
+        final file = File(button.imagePath!);
+        if (!file.existsSync()) {
+          return _buildErrorWidget(button);
+        }
+        return Image.file(
+          file,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              _buildErrorWidget(button),
+        );
+      } else {
+        // Assume it's an asset image
+        return Image.asset(
+          button.imagePath!,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              _buildErrorWidget(button),
+        );
+      }
+    } catch (e) {
+      return _buildErrorWidget(button);
+    }
+  }
+
+  Widget _buildErrorWidget(CategoryButtonItem button) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.image_not_supported,
+          color: Colors.grey,
+          size: 32,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          button.text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+        ),
+      ],
     );
   }
 }

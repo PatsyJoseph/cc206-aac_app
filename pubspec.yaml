@@ -17,6 +17,7 @@ dependencies:
   shared_preferences: ^2.0.15 # For storing persistent key-value pairs
   path_provider: ^2.0.11 # Access device file system paths
   animated_text_kit: ^4.2.2 # for animating text
+  permission_handler: ^10.0.0
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +30,5 @@ flutter:
 
   assets:
     - assets/about_page/trial.jpg
+    - assets/images/
+    - assets/audio/

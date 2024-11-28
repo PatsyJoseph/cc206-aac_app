@@ -5,7 +5,7 @@ class CategoryButtonItem {
   final String text;
   final String category;
   bool isSelected;
-  final bool isPlaceholder;
+  late final bool isPlaceholder;
 
   CategoryButtonItem({
     required this.id,
