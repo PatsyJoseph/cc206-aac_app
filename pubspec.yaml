@@ -17,6 +17,11 @@ dependencies:
   shared_preferences: ^2.0.15 # For storing persistent key-value pairs
   path_provider: ^2.0.11 # Access device file system paths
   animated_text_kit: ^4.2.2 # for animating text
+  firebase_core: ^3.8.0
+  cloud_firestore: ^5.5.0
+  crypto: ^3.0.1
+  uuid: ^3.0.7
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +34,6 @@ flutter:
 
   assets:
     - assets/about_page/trial.jpg
+    - assets/trial.jpg
+    - assets/trial.png
+    - assets/default_avatar.png

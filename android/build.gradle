@@ -1,9 +1,39 @@
+// buildscript {
+//     repositories {
+//         google()  // Ensure that Google's repository is included
+//         mavenCentral()
+//     }
+//     dependencies {
+//         classpath 'com.android.tools.build:gradle:7.4.0'  // Check for the correct version of Gradle plugin
+//         classpath 'com.google.gms:google-services:4.3.15'    
+//     }
+// }
+
+// plugins {
+//   // ...
+
+//   // Add the dependency for the Google services Gradle plugin
+//   id 'com.google.gms.google-services' version '4.4.2' apply false
+//     id 'com.android.application'
+//     id 'kotlin-android'
+// }
+
+// android {
+//     viewBinding {
+//         enabled = true
+//     }
+// }
+
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+        jcenter()
     }
 }
+
+// classpath 'com.google.gms:google-services:4.3.15' // Use the latest version
 
 rootProject.buildDir = "../build"
 subprojects {

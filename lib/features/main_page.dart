@@ -19,6 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '/screens/nav.dart';
 // Importing necessary dart files
 import '../screens/all.dart';
 import '../screens/button_item.dart';
@@ -27,7 +28,10 @@ import '../screens/category2.dart';
 import '../screens/category3.dart';
 
 class UlayawMainPage extends StatefulWidget {
-  const UlayawMainPage({Key? key}) : super(key: key);
+  final String loggedInUser; // Add this to accept the logged-in user
+
+  const UlayawMainPage({Key? key, required this.loggedInUser})
+      : super(key: key);
 
   @override
   _UlayawMainPageState createState() => _UlayawMainPageState();
@@ -35,6 +39,7 @@ class UlayawMainPage extends StatefulWidget {
 
 class _UlayawMainPageState extends State<UlayawMainPage>
     with TickerProviderStateMixin {
+  late String _loggedInUser;
   // Controller for tab navigation: This controls switching between different categories
   late TabController _tabController;
 
@@ -72,6 +77,7 @@ class _UlayawMainPageState extends State<UlayawMainPage>
   @override
   void initState() {
     super.initState();
+    _loggedInUser = widget.loggedInUser;
     _loadAddedButtons();
     _tabController = TabController(length: 4, vsync: this);
     _transformationController.addListener(_onTransformationChanged);
@@ -313,6 +319,7 @@ class _UlayawMainPageState extends State<UlayawMainPage>
       backgroundColor: Colors.white,
       appBar: AppBar(
         // App bar containing the icon for drawer, add, and delete buttons
+        title: Text('Welcome, $_loggedInUser'),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: Builder(
@@ -370,68 +377,7 @@ class _UlayawMainPageState extends State<UlayawMainPage>
         ],
       ),
       // Side navigation drawer: Contains the navigation to tutorial_page.dart and about_page.dart
-      drawer: FractionallySizedBox(
-        widthFactor: 0.75,
-        child: Drawer(
-          child: Container(
-            color: Colors.white,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                DrawerHeader(
-                  decoration: const BoxDecoration(color: Colors.white),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Text(
-                          'Ulayaw',
-                          style: TextStyle(
-                            color: Color(0xFF4D8FF8),
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.help_outline),
-                  title: const Text('Tutorial', style: TextStyle(fontSize: 18)),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/tutorial');
-                  },
-                ),
-                const SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/about');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    color: activeButton == 'About'
-                        ? const Color(0xFFD2D9F5)
-                        : Colors.white,
-                    child: const Row(
-                      children: [
-                        Icon(Icons.info_outline),
-                        SizedBox(width: 10),
-                        Text('About', style: TextStyle(fontSize: 18)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      drawer: NavDrawer(activeNav: 'Main'), // Replaced the drawer with nav.dart
       body: Column(
         children: [
           if (ButtonDeleteMode)

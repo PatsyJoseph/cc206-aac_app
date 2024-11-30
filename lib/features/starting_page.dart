@@ -1,6 +1,5 @@
+import 'package:Ulayaw/features/signup_page.dart';
 import 'package:flutter/material.dart';
-
-import 'main_page.dart'; // Import MainPage for navigation
 
 /// StartingPage widget acts as a splash screen displayed when the app launches.
 ///
@@ -12,16 +11,14 @@ class StartingPage extends StatefulWidget {
 }
 
 class _StartingPageState extends State<StartingPage> {
-
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( 
+    return GestureDetector(
       onTap: () {
         // Navigate to MainPage when tapped
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MainPage()),
+          MaterialPageRoute(builder: (context) => AccountCreation()),
         );
       },
       child: Scaffold(
