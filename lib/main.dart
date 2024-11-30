@@ -4,9 +4,9 @@
 /// This file initializes the app and sets up the main widget tree.
 library;
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 // Import all necessary dart files
 import 'features/starting_page.dart';

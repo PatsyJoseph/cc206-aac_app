@@ -88,7 +88,6 @@ class _UlayawMainPageState extends State<UlayawMainPage>
   void initState() {
     super.initState();
     _loggedInUser = widget.loggedInUser;
-    _loadAddedButtons();
     _tabController = TabController(length: 4, vsync: this);
     _transformationController.addListener(_onTransformationChanged);
 
@@ -131,20 +130,12 @@ class _UlayawMainPageState extends State<UlayawMainPage>
   Future<void> _loadAddedButtons() async {
     final prefs = await SharedPreferences.getInstance();
     final buttonData = prefs.getStringList('customButtons') ?? [];
+    print('Loaded button data: $buttonData'); // Debugging line
 
     setState(() {
-      customButtons = buttonData.isEmpty
-          ? List.generate(
-              12,
-              (index) => CategoryButtonItem(
-                id: 'placeholder_$index',
-                text: 'Button ${index + 1}',
-                isPlaceholder: true,
-              ),
-            )
-          : buttonData
-              .map((item) => CategoryButtonItem.fromJson(json.decode(item)))
-              .toList();
+      customButtons = buttonData
+          .map((item) => CategoryButtonItem.fromJson(json.decode(item)))
+          .toList();
     });
 
     _setupButtonAnimations();
@@ -174,6 +165,13 @@ class _UlayawMainPageState extends State<UlayawMainPage>
     List<CategoryButtonItem> uniqueButtons = [];
 
     for (var button in allButtons) {
+      // Safely check if either imagePath or soundPath is empty or null
+      if ((button.imagePath?.isEmpty ?? true) ||
+          (button.soundPath?.isEmpty ?? true)) {
+        continue; // Skip buttons without image or sound
+      }
+
+      // Add unique buttons based on the `id`
       if (!seenIds.contains(button.id)) {
         seenIds.add(button.id);
         uniqueButtons.add(button);
@@ -412,7 +410,6 @@ class _UlayawMainPageState extends State<UlayawMainPage>
       backgroundColor: Colors.white,
       appBar: AppBar(
         // App bar containing the icon for drawer, add, and delete buttons
-        title: Text('Welcome, $_loggedInUser'),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: Builder(
@@ -472,174 +469,7 @@ class _UlayawMainPageState extends State<UlayawMainPage>
         ],
       ),
       // Side navigation drawer: Contains the navigation to tutorial_page.dart and about_page.dart
-      drawer: NavDrawer(activeNav: 'Main'), // Replaced the drawer with nav.dart
-      body: Column(
-        children: [
-          if (ButtonDeleteMode)
-            Container(
-              padding: const EdgeInsets.all(8),
-              color: Colors.blue.shade50,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Select buttons to delete (${selectedItemIds.length} selected)',
-                    style: const TextStyle(color: Color(0xFF4D8FF8)),
-                  ),
-                ],
-              ),
-            ),
-          // Tab navigation bar: Contains the tabs for categories. This allows the navigation from one category to another
-          TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(icon: Icon(Icons.select_all)),
-              Tab(icon: Icon(Icons.groups)),
-              Tab(icon: Icon(Icons.notification_important)),
-              Tab(icon: Icon(Icons.star)),
-            ],
-            labelColor: Colors.black,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: const Color(0xFF4D8FF8),
-            isScrollable: false,
-          ),
-          // Main content area with buttons
-          Expanded(
-            child: InteractiveViewer(
-              transformationController: _transformationController,
-              minScale: _minScale,
-              maxScale: _maxScale,
-              boundaryMargin: const EdgeInsets.all(0),
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  All(
-                    buttons: buttons,
-                    onButtonPressed: (index) {
-                      if (ButtonDeleteMode) {
-                        _toggleDeleteSelection(index);
-                      } else {
-                        _playItemSound(buttons[index].soundPath);
-                        _animateButtonPress(index);
-                      }
-                    },
-                    onButtonLongPress:
-                        ButtonDeleteMode ? null : _toggleSelection,
-                    animationControllers: _animationControllers,
-                    isDeleteMode: ButtonDeleteMode,
-                  ),
-                  Category1(
-                    buttons: buttons,
-                    onButtonPressed: (index) {
-                      if (ButtonDeleteMode) {
-                        _toggleDeleteSelection(index);
-                      } else {
-                        _playItemSound(buttons[index].soundPath);
-                        _animateButtonPress(index);
-                      }
-                    },
-                    onButtonLongPress:
-                        ButtonDeleteMode ? null : _toggleSelection,
-                    animationControllers: _animationControllers,
-                    isDeleteMode: ButtonDeleteMode,
-                  ),
-                  Category2(
-                    buttons: buttons,
-                    onButtonPressed: (index) {
-                      if (ButtonDeleteMode) {
-                        _toggleDeleteSelection(index);
-                      } else {
-                        _playItemSound(buttons[index].soundPath);
-                        _animateButtonPress(index);
-                      }
-                    },
-                    onButtonLongPress:
-                        ButtonDeleteMode ? null : _toggleSelection,
-                    animationControllers: _animationControllers,
-                    isDeleteMode: ButtonDeleteMode,
-                  ),
-                  Category3(
-                    buttons: buttons,
-                    onButtonPressed: (index) {
-                      if (ButtonDeleteMode) {
-                        _toggleDeleteSelection(index);
-                      } else {
-                        _playItemSound(buttons[index].soundPath);
-                        _animateButtonPress(index);
-                      }
-                    },
-                    onButtonLongPress:
-                        ButtonDeleteMode ? null : _toggleSelection,
-                    animationControllers: _animationControllers,
-                    isDeleteMode: ButtonDeleteMode,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      drawer: FractionallySizedBox(
-        widthFactor: 0.75,
-        child: Drawer(
-          child: Container(
-            color: Colors.white,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                DrawerHeader(
-                  decoration: const BoxDecoration(color: Colors.white),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
-                      Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Text(
-                          'Ulayaw',
-                          style: TextStyle(
-                            color: Color(0xFF4D8FF8),
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.help_outline),
-                  title: const Text('Tutorial', style: TextStyle(fontSize: 18)),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/tutorial');
-                  },
-                ),
-                const SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/about');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    color: activeButton == 'About'
-                        ? const Color(0xFFD2D9F5)
-                        : Colors.white,
-                    child: const Row(
-                      children: [
-                        Icon(Icons.info_outline),
-                        SizedBox(width: 10),
-                        Text('About', style: TextStyle(fontSize: 18)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      drawer: NavDrawer(activeNav: 'Main'),
       body: FutureBuilder<List<CategoryButtonItem>>(
         future: loadButtons(), // Load data when building the body
         builder: (context, snapshot) {
