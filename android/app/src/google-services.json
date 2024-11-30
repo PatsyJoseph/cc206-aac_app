@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "37378870446",
+    "project_id": "tinig-ee1f4",
+    "storage_bucket": "tinig-ee1f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37378870446:android:e027db795628b15c74f13f",
+        "android_client_info": {
+          "package_name": "com.example.cc206_aac_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOS1aqZu8O4coyKENkuhwV4G3m7KNSy30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

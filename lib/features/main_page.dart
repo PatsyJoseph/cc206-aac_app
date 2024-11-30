@@ -20,6 +20,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '/screens/nav.dart';
 // Importing necessary dart files
 import '../screens/all.dart';
 import '../screens/button_item.dart';
@@ -29,7 +30,10 @@ import '../screens/category3.dart';
 import '../data/predefinedButtons.dart';
 
 class UlayawMainPage extends StatefulWidget {
-  const UlayawMainPage({Key? key}) : super(key: key);
+  final String loggedInUser; // Add this to accept the logged-in user
+
+  const UlayawMainPage({Key? key, required this.loggedInUser})
+      : super(key: key);
 
   @override
   _UlayawMainPageState createState() => _UlayawMainPageState();
@@ -37,6 +41,7 @@ class UlayawMainPage extends StatefulWidget {
 
 class _UlayawMainPageState extends State<UlayawMainPage>
     with TickerProviderStateMixin {
+  late String _loggedInUser;
   // late Future<List<CategoryButtonItem>> _buttonsFuture;
 
   // Controller for tab navigation: This controls switching between different categories
@@ -82,6 +87,8 @@ class _UlayawMainPageState extends State<UlayawMainPage>
   @override
   void initState() {
     super.initState();
+    _loggedInUser = widget.loggedInUser;
+    _loadAddedButtons();
     _tabController = TabController(length: 4, vsync: this);
     _transformationController.addListener(_onTransformationChanged);
 
@@ -405,6 +412,7 @@ class _UlayawMainPageState extends State<UlayawMainPage>
       backgroundColor: Colors.white,
       appBar: AppBar(
         // App bar containing the icon for drawer, add, and delete buttons
+        title: Text('Welcome, $_loggedInUser'),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: Builder(
@@ -464,6 +472,112 @@ class _UlayawMainPageState extends State<UlayawMainPage>
         ],
       ),
       // Side navigation drawer: Contains the navigation to tutorial_page.dart and about_page.dart
+      drawer: NavDrawer(activeNav: 'Main'), // Replaced the drawer with nav.dart
+      body: Column(
+        children: [
+          if (ButtonDeleteMode)
+            Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.blue.shade50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Select buttons to delete (${selectedItemIds.length} selected)',
+                    style: const TextStyle(color: Color(0xFF4D8FF8)),
+                  ),
+                ],
+              ),
+            ),
+          // Tab navigation bar: Contains the tabs for categories. This allows the navigation from one category to another
+          TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.select_all)),
+              Tab(icon: Icon(Icons.groups)),
+              Tab(icon: Icon(Icons.notification_important)),
+              Tab(icon: Icon(Icons.star)),
+            ],
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: const Color(0xFF4D8FF8),
+            isScrollable: false,
+          ),
+          // Main content area with buttons
+          Expanded(
+            child: InteractiveViewer(
+              transformationController: _transformationController,
+              minScale: _minScale,
+              maxScale: _maxScale,
+              boundaryMargin: const EdgeInsets.all(0),
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  All(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                  Category1(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                  Category2(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                  Category3(
+                    buttons: buttons,
+                    onButtonPressed: (index) {
+                      if (ButtonDeleteMode) {
+                        _toggleDeleteSelection(index);
+                      } else {
+                        _playItemSound(buttons[index].soundPath);
+                        _animateButtonPress(index);
+                      }
+                    },
+                    onButtonLongPress:
+                        ButtonDeleteMode ? null : _toggleSelection,
+                    animationControllers: _animationControllers,
+                    isDeleteMode: ButtonDeleteMode,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       drawer: FractionallySizedBox(
         widthFactor: 0.75,
         child: Drawer(

@@ -1,21 +1,21 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+// void main() {
+//   runApp(MyApp());
+// }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: AboutUs(), // Set AboutPage as the home screen
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: AboutUs(), // Set AboutPage as the home screen
+//       debugShowCheckedModeBanner: false,
+//     );
+//   }
+// }
 
 /// AboutPage widget displays information about the app and its team,
 /// including sections for 'About Us' and 'Meet the Team'.
