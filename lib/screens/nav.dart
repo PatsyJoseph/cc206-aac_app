@@ -16,17 +16,18 @@ class NavDrawer extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  // Logo and App Name Header
+                  // Logo and App Name Header with padding
                   DrawerHeader(
                     decoration: const BoxDecoration(
                       color: Colors.white,
-                      image: DecorationImage(
-                        image: AssetImage(
-                            'assets/trial.png'), // Replace with your logo path
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Image.asset(
+                        'assets/logo2.png',
                         fit: BoxFit.contain,
                       ),
                     ),
-                    child: Container(),
                   ),
 
                   // Main Navigation
@@ -36,7 +37,7 @@ class NavDrawer extends StatelessWidget {
                     isActive: activeNav == 'Main',
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/');
+                      Navigator.pushNamed(context, '/main');
                     },
                   ),
 
@@ -44,7 +45,7 @@ class NavDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: Icons.person_outline,
                     title: 'My Profile',
-                    isActive: activeNav == 'Profile',
+                    isActive: activeNav == '/profile',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/profile');
@@ -55,7 +56,7 @@ class NavDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: Icons.forum_outlined,
                     title: 'Forum',
-                    isActive: activeNav == 'Forum',
+                    isActive: activeNav == '/forum',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/forum');
@@ -66,7 +67,7 @@ class NavDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: Icons.help_outline,
                     title: 'Tutorial',
-                    isActive: activeNav == 'Tutorial',
+                    isActive: activeNav == '/tutorial',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/tutorial');
@@ -77,7 +78,7 @@ class NavDrawer extends StatelessWidget {
                   _buildDrawerItem(
                     icon: Icons.info_outline,
                     title: 'About',
-                    isActive: activeNav == 'About',
+                    isActive: activeNav == '/about',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/about');
