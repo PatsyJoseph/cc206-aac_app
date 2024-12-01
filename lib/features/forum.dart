@@ -64,12 +64,6 @@ class _ForumPageState extends State<ForumPage> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadPosts();
-  }
-
   Future<List<Comment>> fetchComments(String postId) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -96,7 +90,13 @@ class _ForumPageState extends State<ForumPage> {
       for (var post in fetchedPosts) {
         List<Comment> comments = await fetchComments(post.id);
         post.comments = comments;
+
+        // Sort comments by timestamp
+        post.comments.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       }
+
+      // Sort posts by timestamp before updating the state
+      fetchedPosts.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
       // Update the state with posts and their comments
       setState(() {
@@ -107,6 +107,35 @@ class _ForumPageState extends State<ForumPage> {
         SnackBar(content: Text('Failed to load posts: $e')),
       );
     }
+  }
+
+  Future<void> deletePost(String postId) async {
+    try {
+      // Perform Firestore deletion (Delete the comments first if needed)
+      await ForumService().deletePost(postId);
+
+      // Once Firestore deletion is done, update local state
+      setState(() {
+        posts.removeWhere((post) => post.id == postId);
+      });
+
+      // Show a success snackbar or alert
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Post deleted successfully')),
+      );
+    } catch (e) {
+      // If an error occurs during deletion
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete post')),
+      );
+      print("Error deleting post: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadPosts();
   }
 
   @override
@@ -191,6 +220,9 @@ class _ForumPageState extends State<ForumPage> {
                     onPressed: () {
                       if (postController.text.isNotEmpty) {
                         handleAddPost(postController.text);
+
+                        // Clear the text field after submission
+                        postController.clear();
                       }
                     },
                   ),
@@ -209,6 +241,7 @@ class _ForumPageState extends State<ForumPage> {
                         handleAddComment(post.id, comment),
                     isUserPost: post.username == currentUser,
                     currentUser: '', // Check if the post is by the user
+                    onDeletePost: deletePost, // Pass the delete function
                   );
                 },
               ),
@@ -224,6 +257,7 @@ class Post {
   String id;
   String content;
   String? username;
+  DateTime timestamp;
   List<Comment> comments;
 
   Post({
@@ -231,15 +265,21 @@ class Post {
     required this.content,
     this.username,
     List<Comment>? comments,
+    required this.timestamp,
   }) : comments = comments ?? [];
 
   // Factory method to create a Post instance from Firestore data
   factory Post.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    // Retrieve the timestamp from Firestore
+    final timestamp = (data['timestamp'] as Timestamp).toDate();
+
     return Post(
       id: doc.id,
       content: data['content'] ?? '',
       username: data['username'],
+      timestamp: timestamp,
       comments: (data['comments'] as List<dynamic>?)
               ?.map((commentData) => Comment.fromMap(commentData))
               .toList() ??
@@ -285,12 +325,15 @@ class PostCard extends StatefulWidget {
   final Post post;
   final Function(String) onAddComment;
   final bool isUserPost; // Flag to check if the post is by the user
+  final Function(String) onDeletePost;
 
-  const PostCard(
-      {required this.currentUser,
-      required this.post,
-      required this.onAddComment,
-      required this.isUserPost});
+  const PostCard({
+    required this.post,
+    required this.onAddComment,
+    required this.isUserPost,
+    required this.onDeletePost,
+    required this.currentUser,
+  });
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -312,15 +355,49 @@ class _PostCardState extends State<PostCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.post.username ??
-                  'Anonymous', // Display post author's username
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[600],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.post.username ??
+                      'Anonymous', // Display post author's username
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                // PopupMenuButton for delete option
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert),
+                  onSelected: (value) async {
+                    if (value == 'delete') {
+                      try {
+                        // Call the delete post function from the parent
+                        await widget.onDeletePost(widget.post.id);
+
+                        // Show success snackbar
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Post deleted successfully')),
+                        );
+                      } catch (e) {
+                        // Show error snackbar if deletion fails
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to delete post')),
+                        );
+                      }
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Text('Delete Post'),
+                    ),
+                  ],
+                ),
+              ],
             ),
+
             SizedBox(height: 4),
             Text(
               widget.post.content,

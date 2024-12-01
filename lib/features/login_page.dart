@@ -161,6 +161,18 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: 16.0),
 
+                // Forgot password link
+                TextButton(
+                  onPressed: () {
+                    // Navigate to forgot password page
+                    // Navigator.pushNamed(context, '/forgot-password');
+                  },
+                  child: Text(
+                    "Forgot password?",
+                    style: TextStyle(color: const Color(0xFF3A6D8C)),
+                  ),
+                ),
+
                 // Don't have an account text
                 TextButton(
                   onPressed: () {

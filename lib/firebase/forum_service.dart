@@ -77,34 +77,33 @@ class ForumService {
         // Get the post data
         var postData = postDoc.data() as Map<String, dynamic>;
 
+        // Retrieve the timestamp for the post
+        Timestamp postTimestamp = postData['timestamp'];
+
         // Fetch the comments for each post and order them by timestamp
         QuerySnapshot commentSnapshot = await _firestore
             .collection('posts')
             .doc(postDoc.id)
             .collection('comments')
             .orderBy('timestamp',
-                descending: false) // Order by timestamp (descending)
+                descending: false) // Order by comment timestamp
             .get();
-
-        // List<Comment> comments = commentSnapshot.docs
-        //     .map((doc) => Comment.fromMap(doc.data() as Map<String, dynamic>))
-        //     .toList();
 
         List<Comment> comments = commentSnapshot.docs.map((doc) {
           final comment = Comment.fromMap(doc.data() as Map<String, dynamic>);
-          print(
-              "Comment timestamp: ${comment.timestamp}"); // Debugging the timestamp
           return comment;
         }).toList();
 
         // Sort comments by timestamp if they are not already sorted
         comments.sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
-        // Add the post to the list, including its comments
+        // Add the post to the list, including its timestamp and comments
         posts.add(Post(
           id: postDoc.id,
           content: postData['content'],
           username: postData['username'],
+          timestamp:
+              postTimestamp.toDate(), // Convert Timestamp to DateTime if needed
           comments: comments,
         ));
       }
@@ -112,6 +111,30 @@ class ForumService {
       return posts;
     } catch (e) {
       throw Exception('Failed to load posts: $e');
+    }
+  }
+
+  // delete post
+  Future<void> deletePost(String postId) async {
+    try {
+      // Delete all comments first (optional: if you want to delete comments as well)
+      var commentsSnapshot = await _firestore
+          .collection('posts')
+          .doc(postId)
+          .collection('comments')
+          .get();
+
+      for (var commentDoc in commentsSnapshot.docs) {
+        await commentDoc.reference.delete(); // Delete each comment
+      }
+
+      // Now delete the post document
+      await _firestore.collection('posts').doc(postId).delete();
+
+      print("Post deleted successfully.");
+    } catch (e) {
+      print("Error deleting post: $e");
+      throw Exception("Failed to delete post");
     }
   }
 }
