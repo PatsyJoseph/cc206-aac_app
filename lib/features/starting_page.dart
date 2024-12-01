@@ -36,13 +36,13 @@ class _StartingPageState extends State<StartingPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/images/logo.png',
+                'assets/officiallogo.png',
                 width: 200,
                 height: 200,
               ),
               const SizedBox(height: 15),
               const Text(
-                'Your voice beyond limits',
+                'TINIG',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 50,
