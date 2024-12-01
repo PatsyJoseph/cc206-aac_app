@@ -2,6 +2,7 @@ import 'package:Ulayaw/firebase/user_provider.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../firebase/user_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -76,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                 // Logo display
                 Center(
                   child: Image.asset(
-                    'assets/trial.jpg', // Replace with your logo
+                    'assets/officiallogo.png',
                     height: 120.0,
                   ),
                 ),
@@ -142,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: _isLoading ? null : handleLogin,
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: buttonHeight),
-                    backgroundColor: const Color(0xFF3A6D8C),
+                    backgroundColor: const Color(0xFF4D8FF8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -169,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: Text(
                     "Forgot password?",
-                    style: TextStyle(color: const Color(0xFF3A6D8C)),
+                    style: TextStyle(color: const Color(0xFF4D8FF8)),
                   ),
                 ),
 
@@ -181,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: Text(
                     "Don't have an account? Sign up here",
-                    style: TextStyle(color: const Color(0xFF3A6D8C)),
+                    style: TextStyle(color: const Color(0xFF4D8FF8)),
                   ),
                 ),
               ],
