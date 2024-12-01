@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../screens/nav.dart';
+
 /// A tutorial page with swipeable onboarding screens.
 class TutorialPage extends StatefulWidget {
   const TutorialPage({super.key});
@@ -38,6 +40,23 @@ class _TutorialPageState extends State<TutorialPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        // App bar containing the icon for drawer
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
+          },
+        ),
+      ),
+      drawer: NavDrawer(activeNav: '/profile'),
       body: Stack(
         children: [
           SafeArea(
@@ -120,7 +139,8 @@ class _TutorialPageState extends State<TutorialPage> {
                             ),
                             const SizedBox(height: 8),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
                               child: Text(
                                 tutorial['description']!,
                                 textAlign: TextAlign.center,
