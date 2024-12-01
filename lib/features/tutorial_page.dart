@@ -56,7 +56,7 @@ class _TutorialPageState extends State<TutorialPage> {
           },
         ),
       ),
-      drawer: NavDrawer(activeNav: '/profile'),
+      drawer: NavDrawer(activeNav: '/tutorial'),
       body: Stack(
         children: [
           SafeArea(
@@ -64,21 +64,10 @@ class _TutorialPageState extends State<TutorialPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
                   // Row for title and back button
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Color(0xFF4D8FF8),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      const SizedBox(width: 8),
                       const Text(
                         'How to Use Ulayaw?',
                         style: TextStyle(
