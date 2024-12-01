@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../firebase/user_service.dart';
 
 class AccountCreation extends StatefulWidget {
@@ -213,7 +214,7 @@ class _AccountCreationState extends State<AccountCreation> {
                         : null,
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: buttonHeight),
-                      backgroundColor: const Color(0xFF3A6D8C),
+                      backgroundColor: const Color(0xFF4D8FF8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -237,7 +238,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     },
                     child: Text(
                       'Already have an account?',
-                      style: TextStyle(color: const Color(0xFF3A6D8C)),
+                      style: TextStyle(color: const Color(0xFF4D8FF8)),
                     ),
                   ),
                 ],
