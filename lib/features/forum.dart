@@ -2,7 +2,9 @@ import 'package:Ulayaw/firebase/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../firebase/forum_service.dart';
+import '../screens/nav.dart';
 
 void main() {
   runApp(ForumApp());
@@ -148,43 +150,73 @@ class _ForumPageState extends State<ForumPage> {
         : posts;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Forum'),
-        actions: [
-          // Button to toggle the filter
-          IconButton(
-            icon: Icon(
-                showUserPostsOnly ? Icons.visibility_off : Icons.visibility),
-            onPressed: toggleUserPostsFilter,
-          ),
-        ],
+        // App bar containing the icon for drawer
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
+          },
+        ),
       ),
+      drawer: NavDrawer(activeNav: '/forum'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Deaf Community Forum',
+              'Community Forum',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
+                color: Color(0xFF4D8FF8),
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Welcome to Tinig's community forum. Through this, we hope to bridge hearts and experiences across our deaf community.",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
               ),
             ),
             SizedBox(height: 16),
-            // Add the toggle button here, below the Deaf Community Forum text
+            Divider(
+              // Adds a line or divider
+              color: Colors.grey,
+              thickness: 2,
+            ),
+            // Add the toggle button for filtering posts
             Row(
               children: [
                 Text(
                   'Show only my posts',
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
+                  style: TextStyle(fontSize: 16, color: Colors.black),
                 ),
-                Switch(
-                  value: showUserPostsOnly,
-                  onChanged: (value) {
-                    toggleUserPostsFilter();
-                  },
+                SizedBox(width: 5),
+                Transform.scale(
+                  scale:
+                      0.8, // Adjust the scale factor to change the size (e.g., 1.5 for larger, 0.8 for smaller)
+                  child: Switch(
+                    value: showUserPostsOnly,
+                    onChanged: (value) {
+                      toggleUserPostsFilter();
+                    },
+                    activeColor: Color(0xFF4D8FF8),
+                    activeTrackColor: Colors.blue[200],
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey[300],
+                    splashRadius: 10.0,
+                  ),
                 ),
               ],
             ),
@@ -196,7 +228,7 @@ class _ForumPageState extends State<ForumPage> {
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: TextField(
@@ -212,11 +244,12 @@ class _ForumPageState extends State<ForumPage> {
                 SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Color(0xFF4D8FF8),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
                     icon: Icon(Icons.arrow_upward, color: Colors.white),
+                    iconSize: 20.0,
                     onPressed: () {
                       if (postController.text.isNotEmpty) {
                         handleAddPost(postController.text);
@@ -458,11 +491,12 @@ class _PostCardState extends State<PostCard> {
                 SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Color(0xFF4D8FF8),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
                     icon: Icon(Icons.arrow_upward, color: Colors.white),
+                    iconSize: 20.0,
                     onPressed: () {
                       if (commentController.text.isNotEmpty) {
                         widget.onAddComment(commentController.text);
