@@ -27,7 +27,14 @@ plugins {
 // }
 
 android {
-    // compileSdkVersion 34 
+    signingConfigs {
+        release {
+            keyAlias 'my-key-alias'
+            keyPassword 'iluv$56&'
+            storeFile file('C:/Users/jilln/my-release-key.jks')
+            storePassword 'iluv$56&'
+        }
+    } 
 
     namespace = "com.example.cc206_aac_app"
     compileSdk = flutter.compileSdkVersion
@@ -50,23 +57,13 @@ android {
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
-        // versionName = flutter.versionName
-        // minSdkVersion 21   // Minimum SDK version you want to support
-        // targetSdkVersion 34 // You can set this to the same as compileSdkVersion
-        // versionCode 1
-        // versionName "1.0"
     }
 
     buildTypes {
-       release {
-            // Enables code shrinking
-            minifyEnabled true
-
-            // Enables resource shrinking
-            shrinkResources true
-
-            // Enables ProGuard or R8 (depending on your configuration)
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false // For debugging issues, disable code shrinking
+            shrinkResources false
         }
     }
 }

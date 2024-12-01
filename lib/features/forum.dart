@@ -48,8 +48,11 @@ class _ForumPageState extends State<ForumPage> {
     final postIndex = posts.indexWhere((post) => post.id == postId);
     if (postIndex != -1) {
       setState(() {
-        posts[postIndex].addComment(
-            Comment(content: commentContent, username: 'Current User'));
+        posts[postIndex].addComment(Comment(
+          content: commentContent,
+          username: 'Current User',
+          timestamp: DateTime.now(),
+        ));
       });
     }
   }
@@ -204,8 +207,8 @@ class _ForumPageState extends State<ForumPage> {
                     post: post,
                     onAddComment: (comment) =>
                         handleAddComment(post.id, comment),
-                    isUserPost: post.username ==
-                        currentUser, // Check if the post is by the user
+                    isUserPost: post.username == currentUser,
+                    currentUser: '', // Check if the post is by the user
                   );
                 },
               ),
@@ -230,43 +233,62 @@ class Post {
     List<Comment>? comments,
   }) : comments = comments ?? [];
 
-  // Factory method remains unchanged
+  // Factory method to create a Post instance from Firestore data
   factory Post.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Post(
       id: doc.id,
       content: data['content'] ?? '',
       username: data['username'],
+      comments: (data['comments'] as List<dynamic>?)
+              ?.map((commentData) => Comment.fromMap(commentData))
+              .toList() ??
+          [],
     );
+  }
+
+  // Method to sort comments by timestamp
+  void sortComments() {
+    comments.sort((a, b) => a.timestamp
+        .compareTo(b.timestamp)); // Sort in ascending order (oldest first)
   }
 
   void addComment(Comment comment) {
     comments.add(comment);
+    sortComments();
   }
 }
 
 class Comment {
   String content;
   String? username; // Username of the commenter
+  DateTime timestamp;
 
-  Comment({required this.content, required this.username});
+  Comment({
+    required this.content,
+    required this.username,
+    required this.timestamp,
+  });
 
   // Factory method to create a Comment instance from a map
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
       content: map['content'],
       username: map['username'],
+      timestamp: (map['timestamp'] as Timestamp).toDate(),
     );
   }
 }
 
 class PostCard extends StatefulWidget {
+  final String currentUser;
   final Post post;
   final Function(String) onAddComment;
   final bool isUserPost; // Flag to check if the post is by the user
 
   const PostCard(
-      {required this.post,
+      {required this.currentUser,
+      required this.post,
       required this.onAddComment,
       required this.isUserPost});
 
@@ -279,6 +301,10 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUserUsername = context.watch<UserProvider>().currentUser;
+
+    widget.post.comments.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Padding(
@@ -306,16 +332,33 @@ class _PostCardState extends State<PostCard> {
               ),
             ),
             Divider(),
-            // Display the comments
+            // Display the comments with alignment based on the username
             ...widget.post.comments.map(
-              (comment) => Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  '${comment.username}: ${comment.content}', // Display commenter's username
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
-            ),
+              (comment) {
+                bool isCurrentUser = comment.username == currentUserUsername;
+                return Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Align(
+                    alignment: isCurrentUser
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: isCurrentUser
+                            ? const Color.fromARGB(255, 218, 238, 255)
+                            : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${comment.username}: ${comment.content}', // Display commenter's username
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ).toList(),
             SizedBox(height: 8),
             Row(
               children: [
@@ -346,6 +389,9 @@ class _PostCardState extends State<PostCard> {
                     onPressed: () {
                       if (commentController.text.isNotEmpty) {
                         widget.onAddComment(commentController.text);
+
+                        // Clear the text field after submission
+                        commentController.clear();
                       }
                     },
                   ),

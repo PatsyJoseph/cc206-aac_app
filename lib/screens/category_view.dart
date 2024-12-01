@@ -98,6 +98,7 @@ class CategoryView extends StatelessWidget {
 
   Widget _buildButtonContent(CategoryButtonItem button) {
     if (button.imagePath == null) {
+      // If there's no image, just display the text
       return Text(
         button.text,
         textAlign: TextAlign.center,
@@ -115,19 +116,51 @@ class CategoryView extends StatelessWidget {
         if (!file.existsSync()) {
           return _buildErrorWidget(button);
         }
-        return Image.file(
-          file,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              _buildErrorWidget(button),
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.file(
+              file,
+              fit: BoxFit
+                  .contain, // Use BoxFit.contain to scale image proportionally
+              height: 110, // Set a fixed height for the image
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildErrorWidget(button),
+            ),
+            const SizedBox(height: 8), // Add space between the image and text
+            Text(
+              button.text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         );
       } else {
         // Assume it's an asset image
-        return Image.asset(
-          button.imagePath!,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              _buildErrorWidget(button),
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              button.imagePath!,
+              fit: BoxFit
+                  .contain, // Use BoxFit.contain to scale image proportionally
+              height: 120, // Set a fixed height for the image
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildErrorWidget(button),
+            ),
+            const SizedBox(height: 8), // Add space between the image and text
+            Text(
+              button.text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         );
       }
     } catch (e) {

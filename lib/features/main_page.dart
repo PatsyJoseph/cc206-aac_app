@@ -62,6 +62,9 @@ class _UlayawMainPageState extends State<UlayawMainPage>
   String selectedCategory = 'all';
   String activeButton = '';
 
+  // Allow user to add label to button
+  final TextEditingController _labelController = TextEditingController();
+
   // Button Data: Stores all button data and controls button press animation
   // List<CategoryButtonItem> predefinedButtons = [];
   List<CategoryButtonItem> customButtons = [];
@@ -245,6 +248,17 @@ class _UlayawMainPageState extends State<UlayawMainPage>
                       },
                     ),
                     const SizedBox(height: 20),
+                    TextField(
+                      controller:
+                          _labelController, // Use controller for label input
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Button Label',
+                        labelStyle: TextStyle(color: Color(0xFF4D8FF8)),
+                        border: OutlineInputBorder(),
+                        fillColor: Colors.white,
+                        filled: true,
+                      ),
+                    ),
                     ListTile(
                       title: const Text('Pick Image'),
                       leading: const Icon(Icons.image),
@@ -298,6 +312,10 @@ class _UlayawMainPageState extends State<UlayawMainPage>
   }
 
   Future<void> _addNewButton() async {
+    String buttonLabel = _labelController.text.isNotEmpty
+        ? _labelController.text
+        : 'Item ${customButtons.length + 1}';
+
     if (newItemImage != null && newItemSound != null) {
       final directory = await getApplicationDocumentsDirectory();
       final String imagePath =
@@ -313,7 +331,7 @@ class _UlayawMainPageState extends State<UlayawMainPage>
           id: 'custom_${customButtons.length}',
           imagePath: imagePath, // Image path
           soundPath: soundPath, // Sound path
-          text: 'Item ${customButtons.length + 1}', // Text for the button
+          text: buttonLabel, // Text for the button
           category: selectedCategory,
         ));
       });

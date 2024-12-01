@@ -71,10 +71,44 @@ class ForumService {
   Future<List<Post>> getPosts() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('posts').get();
-      List<Post> posts = querySnapshot.docs
-          .map(
-              (doc) => Post.fromFirestore(doc)) // Use fromFirestore method here
-          .toList();
+      List<Post> posts = [];
+
+      for (var postDoc in querySnapshot.docs) {
+        // Get the post data
+        var postData = postDoc.data() as Map<String, dynamic>;
+
+        // Fetch the comments for each post and order them by timestamp
+        QuerySnapshot commentSnapshot = await _firestore
+            .collection('posts')
+            .doc(postDoc.id)
+            .collection('comments')
+            .orderBy('timestamp',
+                descending: false) // Order by timestamp (descending)
+            .get();
+
+        // List<Comment> comments = commentSnapshot.docs
+        //     .map((doc) => Comment.fromMap(doc.data() as Map<String, dynamic>))
+        //     .toList();
+
+        List<Comment> comments = commentSnapshot.docs.map((doc) {
+          final comment = Comment.fromMap(doc.data() as Map<String, dynamic>);
+          print(
+              "Comment timestamp: ${comment.timestamp}"); // Debugging the timestamp
+          return comment;
+        }).toList();
+
+        // Sort comments by timestamp if they are not already sorted
+        comments.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+        // Add the post to the list, including its comments
+        posts.add(Post(
+          id: postDoc.id,
+          content: postData['content'],
+          username: postData['username'],
+          comments: comments,
+        ));
+      }
+
       return posts;
     } catch (e) {
       throw Exception('Failed to load posts: $e');
