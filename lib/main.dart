@@ -50,7 +50,8 @@ class Ulayaw extends StatelessWidget {
       ),
       initialRoute: '/', // Added initialRoute
       routes: {
-        '/': (context) => AccountCreation(),
+        '/': (context) => StartingPage(),
+        '/signup': (context) => AccountCreation(),
         '/login': (context) => LoginPage(),
         '/profile': (context) => UserProfilePage(
               currentUser: '',

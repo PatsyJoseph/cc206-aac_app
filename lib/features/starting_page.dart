@@ -1,4 +1,4 @@
-import 'package:Ulayaw/features/signup_page.dart';
+import 'package:Ulayaw/features/login_page.dart';
 import 'package:flutter/material.dart';
 
 /// StartingPage widget acts as a splash screen displayed when the app launches.
@@ -18,7 +18,7 @@ class _StartingPageState extends State<StartingPage> {
         // Navigate to MainPage when tapped
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => AccountCreation()),
+          MaterialPageRoute(builder: (context) => LoginPage()),
         );
       },
       child: Scaffold(
