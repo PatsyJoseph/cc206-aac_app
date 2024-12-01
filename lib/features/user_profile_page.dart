@@ -7,12 +7,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../screens/nav.dart'; // Import NavDrawer file here
+
 class UserProfilePage extends StatefulWidget {
   final String currentUser;
-
-  // const UserProfilePage({
-  //   required this.username, // Initialize username
-  // });
 
   UserProfilePage({required this.currentUser, required String password});
 
@@ -74,18 +72,30 @@ class _UserProfilePageState extends State<UserProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: SizedBox.shrink(),
-        backgroundColor: Colors.transparent,
+        // App bar containing the icon for drawer
+        backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
+          },
+        ),
       ),
+      drawer: NavDrawer(activeNav: '/profile'),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 40.0),
+              const SizedBox(height: 40.0),
 
               // Profile Picture Display (centered)
               Center(
@@ -95,45 +105,48 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     radius: 60.0,
                     backgroundImage: _profileImagePath != null
                         ? FileImage(File(_profileImagePath!))
-                        : AssetImage('assets/default_avatar.png')
+                        : const AssetImage('assets/default_avatar.png')
                             as ImageProvider,
                     child: _profileImagePath == null
-                        ? Icon(Icons.camera_alt, size: 30.0)
+                        ? const Icon(Icons.camera_alt, size: 30.0)
                         : null,
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
 
               // Label under profile image
-              Text(
+              const Text(
                 'Click profile pic to replace image',
-                style: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
+                style: TextStyle(fontSize: 10.0, fontStyle: FontStyle.italic),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
 
               // Welcome message with username
               Text(
                 'Welcome, $username!',
-                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4D8FF8)),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 50.0),
 
               // New message about Ulayaw's unique features
-              Text(
+              const Text(
                 'Through this application, we aim to help enhance communication and independence, '
                 'particularly for those who speak Filipino. By providing tools that support better social interaction, '
                 'we hope to increase confidence, assist caregivers, and make communication easier, especially during emergencies.',
                 style: TextStyle(fontSize: 16.0, height: 1.5),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 250.0),
 
               // Email Address (no links)
-              Text(
+              const Text(
                 'For suggestions and improvements, you can email us at:\n'
                 'tinigaacapplication@gmail.com',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],
