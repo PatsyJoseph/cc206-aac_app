@@ -57,26 +57,20 @@ class _AccountCreationState extends State<AccountCreation> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    double horizontalPadding = screenWidth > 800 ? 60.0 : 30.0;
-    double verticalSpacing = screenHeight > 800 ? 60.0 : 30.0;
-    double buttonHeight = screenHeight > 800 ? 16.0 : 12.0;
+    double horizontalPadding = screenWidth > 400 ? 30.0 : 10.0;
+    double verticalSpacing = screenHeight > 400 ? 30.0 : 10.0;
+    double buttonHeight = screenHeight > 400 ? 16.0 : 12.0;
 
-    double textFontSize = screenWidth > 800 ? 14.0 : 12.0;
-    double titleFontSize = screenWidth > 800 ? 24.0 : 16.0;
-    double inputFontSize = screenWidth > 800 ? 14.0 : 12.0;
-
-    // Dynamic padding based on screen height
-    double topPadding = screenHeight > 800 ? 100.0 : 40.0;
-    double bottomPadding = screenHeight > 800 ? 100.0 : 40.0;
+    double textFontSize = screenWidth > 400 ? 16.0 : 14.0;
+    double titleFontSize = screenWidth > 400 ? 32.0 : 24.0;
+    double inputFontSize = screenWidth > 400 ? 16.0 : 14.0;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding).copyWith(
-            top: topPadding,
-            bottom: bottomPadding,
-          ),
+          padding:
+              EdgeInsets.symmetric(horizontal: horizontalPadding).copyWith(),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: screenWidth > 800 ? 800 : screenWidth * 0.7,
