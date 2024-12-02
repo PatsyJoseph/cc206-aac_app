@@ -17,6 +17,7 @@ class _AccountCreationState extends State<AccountCreation> {
   // State variables for password visibility
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isPasswordLengthValid = true;
 
   // State variable for confirm password validation
   bool _isPasswordMatch = true;
@@ -25,6 +26,12 @@ class _AccountCreationState extends State<AccountCreation> {
     setState(() {
       _isPasswordMatch =
           _passwordController.text == _passwordConfirmController.text;
+    });
+  }
+
+  void _validatePasswordLength() {
+    setState(() {
+      _isPasswordLengthValid = _passwordController.text.length >= 8;
     });
   }
 
@@ -125,6 +132,7 @@ class _AccountCreationState extends State<AccountCreation> {
                   SizedBox(height: 8.0),
                   TextFormField(
                     controller: _passwordController,
+                    onChanged: (_) => _validatePasswordLength(),
                     style: TextStyle(fontSize: inputFontSize),
                     decoration: InputDecoration(
                       hintText: 'Enter Password',
@@ -146,6 +154,14 @@ class _AccountCreationState extends State<AccountCreation> {
                     ),
                     obscureText: !_isPasswordVisible,
                   ),
+                  if (!_isPasswordLengthValid)
+                    Text(
+                      'Password must be at least 8 characters long',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: textFontSize,
+                      ),
+                    ),
                   SizedBox(height: 16.0),
 
                   // Password Confirmation Label and Field
@@ -201,7 +217,7 @@ class _AccountCreationState extends State<AccountCreation> {
 
                   // Create Account Button
                   ElevatedButton(
-                    onPressed: _isPasswordMatch
+                    onPressed: _isPasswordMatch && _isPasswordLengthValid
                         ? () async {
                             await _handleCreateAccount();
                           }

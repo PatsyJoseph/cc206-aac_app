@@ -90,6 +90,8 @@ class _ForumPageState extends State<ForumPage> {
 
       // Fetch comments for each post
       for (var post in fetchedPosts) {
+        if (!mounted) return; // Stop if the widget is unmounted
+
         List<Comment> comments = await fetchComments(post.id);
         post.comments = comments;
 
@@ -101,20 +103,24 @@ class _ForumPageState extends State<ForumPage> {
       fetchedPosts.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
       // Update the state with posts and their comments
-      setState(() {
-        posts = fetchedPosts;
-      });
+      if (mounted) {
+        setState(() {
+          posts = fetchedPosts;
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load posts: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load posts: $e')),
+        );
+      }
     }
   }
 
   Future<void> deletePost(String postId) async {
     try {
       // Perform Firestore deletion (Delete the comments first if needed)
-      await ForumService().deletePost(postId);
+      await ForumService().deletePost(context, postId);
 
       // Once Firestore deletion is done, update local state
       setState(() {
@@ -195,7 +201,7 @@ class _ForumPageState extends State<ForumPage> {
               color: Colors.grey,
               thickness: 2,
             ),
-            // Add the toggle button for filtering posts
+            // Add the toggle button here, below the Deaf Community Forum text
             Row(
               children: [
                 Text(
@@ -405,18 +411,27 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(Icons.more_vert),
                   onSelected: (value) async {
                     if (value == 'delete') {
-                      try {
-                        // Call the delete post function from the parent
-                        await widget.onDeletePost(widget.post.id);
+                      if (widget.post.username == currentUserUsername) {
+                        try {
+                          // Call the delete post function from the parent
+                          await widget.onDeletePost(widget.post.id);
 
-                        // Show success snackbar
+                          // Show success snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Post deleted successfully')),
+                          );
+                        } catch (e) {
+                          // Show error snackbar if deletion fails
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to delete post')),
+                          );
+                        }
+                      } else {
+                        // Notify the user they cannot delete someone else's post
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Post deleted successfully')),
-                        );
-                      } catch (e) {
-                        // Show error snackbar if deletion fails
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Failed to delete post')),
+                          SnackBar(
+                              content: Text('You cannot delete this post')),
                         );
                       }
                     }
@@ -427,7 +442,7 @@ class _PostCardState extends State<PostCard> {
                       child: Text('Delete Post'),
                     ),
                   ],
-                ),
+                )
               ],
             ),
 

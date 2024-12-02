@@ -14,6 +14,7 @@ import 'features/main_page.dart';
 import 'features/tutorial_page.dart';
 import 'features/aboutUs.dart';
 import 'features/login_page.dart';
+import 'features/changepassword_form.dart';
 import 'features/signup_page.dart';
 import 'features/user_profile_page.dart';
 import 'features/forum.dart';
@@ -67,6 +68,7 @@ class Ulayaw extends StatelessWidget {
         '/forum': (context) => ForumPage(),
         '/tutorial': (context) => TutorialPage(),
         '/about': (context) => AboutUs(),
+        '/forgot-password': (context) => ChangePasswordPage(),
         '/category1': (context) => Category1(
               buttons: [],
               onButtonPressed: (int) {},
