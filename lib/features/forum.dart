@@ -206,13 +206,23 @@ class _ForumPageState extends State<ForumPage> {
               children: [
                 Text(
                   'Show only my posts',
-                  style: TextStyle(fontSize: 16, color: Colors.black87),
+                  style: TextStyle(fontSize: 16, color: Colors.black),
                 ),
-                Switch(
-                  value: showUserPostsOnly,
-                  onChanged: (value) {
-                    toggleUserPostsFilter();
-                  },
+                SizedBox(width: 5),
+                Transform.scale(
+                  scale:
+                      0.8, // Adjust the scale factor to change the size (e.g., 1.5 for larger, 0.8 for smaller)
+                  child: Switch(
+                    value: showUserPostsOnly,
+                    onChanged: (value) {
+                      toggleUserPostsFilter();
+                    },
+                    activeColor: Color(0xFF4D8FF8),
+                    activeTrackColor: Colors.blue[200],
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey[300],
+                    splashRadius: 10.0,
+                  ),
                 ),
               ],
             ),
@@ -224,7 +234,7 @@ class _ForumPageState extends State<ForumPage> {
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: TextField(
@@ -240,11 +250,12 @@ class _ForumPageState extends State<ForumPage> {
                 SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Color(0xFF4D8FF8),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
                     icon: Icon(Icons.arrow_upward, color: Colors.white),
+                    iconSize: 20.0,
                     onPressed: () {
                       if (postController.text.isNotEmpty) {
                         handleAddPost(postController.text);
@@ -495,11 +506,12 @@ class _PostCardState extends State<PostCard> {
                 SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Color(0xFF4D8FF8),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
                     icon: Icon(Icons.arrow_upward, color: Colors.white),
+                    iconSize: 20.0,
                     onPressed: () {
                       if (commentController.text.isNotEmpty) {
                         widget.onAddComment(commentController.text);
