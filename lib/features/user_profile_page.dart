@@ -92,65 +92,63 @@ class _UserProfilePageState extends State<UserProfilePage> {
       drawer: NavDrawer(activeNav: '/profile'),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 40.0),
-
-              // Profile Picture Display (centered)
-              Center(
-                child: GestureDetector(
-                  onTap: _pickImage, // Allow user to upload a new photo
-                  child: CircleAvatar(
-                    radius: 60.0,
-                    backgroundImage: _profileImagePath != null
-                        ? FileImage(File(_profileImagePath!))
-                        : const AssetImage('assets/default_avatar.png')
-                            as ImageProvider,
-                    child: _profileImagePath == null
-                        ? const Icon(Icons.camera_alt, size: 30.0)
-                        : null,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Adjust alignment
+          children: [
+            // Main Content (Profile Picture and Info)
+            Column(
+              children: [
+                const SizedBox(height: 40.0),
+                // Profile Picture Display (centered)
+                Center(
+                  child: GestureDetector(
+                    onTap: _pickImage, // Allow user to upload a new photo
+                    child: CircleAvatar(
+                      radius: 60.0,
+                      backgroundImage: _profileImagePath != null
+                          ? FileImage(File(_profileImagePath!))
+                          : const AssetImage('assets/default_avatar.png')
+                              as ImageProvider,
+                      child: _profileImagePath == null
+                          ? const Icon(Icons.camera_alt, size: 30.0)
+                          : null,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10.0),
-
-              // Label under profile image
-              const Text(
-                'Click profile pic to replace image',
-                style: TextStyle(fontSize: 10.0, fontStyle: FontStyle.italic),
-              ),
-              const SizedBox(height: 20.0),
-
-              // Welcome message with username
-              Text(
-                'Welcome, $username!',
-                style: const TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4D8FF8)),
-              ),
-              const SizedBox(height: 50.0),
-
-              // New message about Ulayaw's unique features
-              const Text(
-                'Through this application, we aim to help enhance communication and independence, '
-                'particularly for those who speak Filipino. By providing tools that support better social interaction, '
-                'we hope to increase confidence, assist caregivers, and make communication easier, especially during emergencies.',
-                style: TextStyle(fontSize: 16.0, height: 1.5),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 250.0),
-
-              // Email Address (no links)
-              const Text(
-                'For suggestions and improvements, you can email us at:\n'
-                'tinigaacapplication@gmail.com',
-                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+                const SizedBox(height: 10.0),
+                // Label under profile image
+                const Text(
+                  'Click profile pic to replace image',
+                  style: TextStyle(fontSize: 10.0, fontStyle: FontStyle.italic),
+                ),
+                const SizedBox(height: 20.0),
+                // Welcome message with username
+                Text(
+                  'Welcome, $username!',
+                  style: const TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4D8FF8)),
+                ),
+                const SizedBox(height: 50.0),
+                // Text
+                const Text(
+                  'Through this application, we aim to help enhance communication and independence, '
+                  'particularly for those who speak Filipino. By providing tools that support better social interaction, '
+                  'we hope to increase confidence, assist caregivers, and make communication easier, especially during emergencies.',
+                  style: TextStyle(fontSize: 16.0, height: 1.5),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+            // Suggestions Text at Bottom
+            const Text(
+              'For suggestions and improvements, you can email us at:\n'
+              'tinigaacapplication@gmail.com',
+              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
