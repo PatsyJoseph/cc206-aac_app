@@ -24,7 +24,7 @@ class NavDrawer extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Image.asset(
-                        'assets/logo2.png',
+                        'assets/officiallogo.png',
                         fit: BoxFit.contain,
                       ),
                     ),
