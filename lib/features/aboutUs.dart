@@ -166,29 +166,34 @@ class Team extends StatelessWidget {
   Widget build(BuildContext context) {
      final teamMembers = [
       {
-        'name': 'John Doe',
-        'email': 'john.doe@example.com',
-        'role': 'Project Manager'
+        'name': 'Patrick Joseph Napud',
+        'email': 'patrickjoseph.napud@wvsu.edu.ph',
+        'role': 'Project Manager',
+        'image': 'assets/Patrick.jpg'
       },
       {
-        'name': 'Jane Smith',
-        'email': 'jane.smith@example.com',
-        'role': 'Lead Developer'
+        'name': 'Jill Navarra',
+        'email': 'jill.navarra@wvsu.edu.ph',
+        'role': 'UI/UX Designer',
+        'image': 'assets/Jill.jpg'
       },
       {
-        'name': 'Alice Johnson',
-        'email': 'alice.johnson@example.com',
-        'role': 'UI/UX Designer'
+        'name': 'Pauline Joy Bautista',
+        'email': 'paulinejoy.bautista@wvsu.edu.ph',
+        'role': 'Head Developer',
+        'image': 'assets/Pauline.jpg'
       },
       {
-        'name': 'Bob Brown',
-        'email': 'bob.brown@example.com',
-        'role': 'QA Engineer'
+        'name': 'Ashley Denise Feliciano',
+        'email': 'ashleydenise.feliciano@wvsu.edu.ph',
+        'role': 'QA Engineer',
+        'image': 'assets/Ash.jpg'
       },
       {
-        'name': 'Charlie Green',
-        'email': 'charlie.green@example.com',
-        'role': 'Marketing Specialist'
+        'name': 'Joshua Prinze C. Calibjo',
+        'email': 'joshuaprinze.calibjo@wvsu.edu.ph',
+        'role': 'Marketing Specialist',
+        'image': 'assets/Joshua.jpg'
       },
     ];
 
@@ -223,7 +228,7 @@ class Team extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             image: DecorationImage(
-              image: AssetImage('assets/trial.jpg'),
+              image: AssetImage(member['image']!),
               fit: BoxFit.cover,
             ),
           ),
@@ -231,24 +236,30 @@ class Team extends StatelessWidget {
         SizedBox(height: 10),
 
         // Name
-        Text(
+      SizedBox(height: 5),
+      Align(
+        alignment: Alignment.center,  
+        child: Text(
           member['name']!,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 5),
+        ),
 
         // Email
-        Text(
+        SizedBox(height: 5),
+        Align (
+          alignment: Alignment.center,
+          child: Text(
           member['email']!,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 11,
             color: Colors.grey[600],
           ),
         ),
-        SizedBox(height: 5),
+        ),
 
         // Role
         Text(
