@@ -115,9 +115,46 @@ class ForumService {
   }
 
   // delete post
-  Future<void> deletePost(String postId) async {
+  Future<void> deletePost(BuildContext context, String postId) async {
+    final currentUser =
+        Provider.of<UserProvider>(context, listen: false).currentUser;
+
+    if (currentUser == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: User is not logged in.')),
+        );
+      }
+      return;
+    }
+
     try {
-      // Delete all comments first (optional: if you want to delete comments as well)
+      // Retrieve the post document
+      DocumentSnapshot postSnapshot =
+          await _firestore.collection('posts').doc(postId).get();
+
+      if (!postSnapshot.exists) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: Post does not exist.')),
+          );
+        }
+        return;
+      }
+
+      // Check if the current user is the author of the post
+      String postAuthor = postSnapshot.get('username');
+      if (postAuthor != currentUser) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('You are not authorized to delete this post.')),
+          );
+        }
+        return;
+      }
+
+      // Delete all comments first (optional)
       var commentsSnapshot = await _firestore
           .collection('posts')
           .doc(postId)
@@ -125,14 +162,23 @@ class ForumService {
           .get();
 
       for (var commentDoc in commentsSnapshot.docs) {
-        await commentDoc.reference.delete(); // Delete each comment
+        await commentDoc.reference.delete();
       }
 
       // Now delete the post document
       await _firestore.collection('posts').doc(postId).delete();
 
-      print("Post deleted successfully.");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Post deleted successfully.')),
+        );
+      }
     } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete post: $e')),
+        );
+      }
       print("Error deleting post: $e");
       throw Exception("Failed to delete post");
     }

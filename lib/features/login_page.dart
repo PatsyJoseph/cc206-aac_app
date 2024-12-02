@@ -1,5 +1,4 @@
 import 'package:Ulayaw/firebase/user_provider.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../firebase/user_service.dart';
@@ -76,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                 // Logo display
                 Center(
                   child: Image.asset(
-                    'assets/trial.jpg', // Replace with your logo
+                    'assets/officiallogo.png', // Replace with your logo
                     height: 120.0,
                   ),
                 ),
@@ -134,6 +133,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    } else if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
                 ),
                 SizedBox(height: verticalSpacing),
 
@@ -165,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(
                   onPressed: () {
                     // Navigate to forgot password page
-                    // Navigator.pushNamed(context, '/forgot-password');
+                    Navigator.pushNamed(context, '/forgot-password');
                   },
                   child: Text(
                     "Forgot password?",

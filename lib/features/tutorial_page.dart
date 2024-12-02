@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../screens/nav.dart';
+
 /// A tutorial page with swipeable onboarding screens.
 class TutorialPage extends StatefulWidget {
   const TutorialPage({super.key});
@@ -38,6 +40,23 @@ class _TutorialPageState extends State<TutorialPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        // App bar containing the icon for drawer
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
+          },
+        ),
+      ),
+      drawer: NavDrawer(activeNav: '/tutorial'),
       body: Stack(
         children: [
           SafeArea(
@@ -45,21 +64,10 @@ class _TutorialPageState extends State<TutorialPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
                   // Row for title and back button
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Color(0xFF4D8FF8),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      const SizedBox(width: 8),
                       const Text(
                         'How to Use Ulayaw?',
                         style: TextStyle(
@@ -120,7 +128,8 @@ class _TutorialPageState extends State<TutorialPage> {
                             ),
                             const SizedBox(height: 8),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
                               child: Text(
                                 tutorial['description']!,
                                 textAlign: TextAlign.center,

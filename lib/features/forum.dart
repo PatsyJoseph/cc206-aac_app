@@ -2,7 +2,9 @@ import 'package:Ulayaw/firebase/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../firebase/forum_service.dart';
+import '../screens/nav.dart';
 
 void main() {
   runApp(ForumApp());
@@ -88,6 +90,8 @@ class _ForumPageState extends State<ForumPage> {
 
       // Fetch comments for each post
       for (var post in fetchedPosts) {
+        if (!mounted) return; // Stop if the widget is unmounted
+
         List<Comment> comments = await fetchComments(post.id);
         post.comments = comments;
 
@@ -99,20 +103,24 @@ class _ForumPageState extends State<ForumPage> {
       fetchedPosts.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
       // Update the state with posts and their comments
-      setState(() {
-        posts = fetchedPosts;
-      });
+      if (mounted) {
+        setState(() {
+          posts = fetchedPosts;
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load posts: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load posts: $e')),
+        );
+      }
     }
   }
 
   Future<void> deletePost(String postId) async {
     try {
       // Perform Firestore deletion (Delete the comments first if needed)
-      await ForumService().deletePost(postId);
+      await ForumService().deletePost(context, postId);
 
       // Once Firestore deletion is done, update local state
       setState(() {
@@ -148,31 +156,51 @@ class _ForumPageState extends State<ForumPage> {
         : posts;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Forum'),
-        actions: [
-          // Button to toggle the filter
-          IconButton(
-            icon: Icon(
-                showUserPostsOnly ? Icons.visibility_off : Icons.visibility),
-            onPressed: toggleUserPostsFilter,
-          ),
-        ],
+        // App bar containing the icon for drawer
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              color: const Color(0xFF4D8FF8),
+              onPressed: () {
+                Scaffold.of(context).openDrawer(); // Open the drawer
+              },
+            );
+          },
+        ),
       ),
+      drawer: NavDrawer(activeNav: '/forum'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Deaf Community Forum',
+              'Community Forum',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
+                color: Color(0xFF4D8FF8),
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              "Welcome to Tinig's community forum. Through this, we hope to bridge hearts and experiences across our deaf community.",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
               ),
             ),
             SizedBox(height: 16),
+            Divider(
+              // Adds a line or divider
+              color: Colors.grey,
+              thickness: 2,
+            ),
             // Add the toggle button here, below the Deaf Community Forum text
             Row(
               children: [
@@ -372,18 +400,27 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(Icons.more_vert),
                   onSelected: (value) async {
                     if (value == 'delete') {
-                      try {
-                        // Call the delete post function from the parent
-                        await widget.onDeletePost(widget.post.id);
+                      if (widget.post.username == currentUserUsername) {
+                        try {
+                          // Call the delete post function from the parent
+                          await widget.onDeletePost(widget.post.id);
 
-                        // Show success snackbar
+                          // Show success snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Post deleted successfully')),
+                          );
+                        } catch (e) {
+                          // Show error snackbar if deletion fails
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to delete post')),
+                          );
+                        }
+                      } else {
+                        // Notify the user they cannot delete someone else's post
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Post deleted successfully')),
-                        );
-                      } catch (e) {
-                        // Show error snackbar if deletion fails
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Failed to delete post')),
+                          SnackBar(
+                              content: Text('You cannot delete this post')),
                         );
                       }
                     }
@@ -394,7 +431,7 @@ class _PostCardState extends State<PostCard> {
                       child: Text('Delete Post'),
                     ),
                   ],
-                ),
+                )
               ],
             ),
 

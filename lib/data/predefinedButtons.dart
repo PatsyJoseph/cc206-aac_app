@@ -109,7 +109,7 @@ final List<CategoryButtonItem> predefinedButtons = [
     id: "14",
     imagePath: "assets/images/kamusta.png",
     soundPath: "audio/kamusta_sound.mp3",
-    text: "kamusta",
+    text: "Kamusta",
     category: "category3",
     isPlaceholder: true,
   ),

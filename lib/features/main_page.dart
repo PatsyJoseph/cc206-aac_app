@@ -235,11 +235,11 @@ class _UlayawMainPageState extends State<UlayawMainPage>
                       items: const [
                         DropdownMenuItem(value: 'all', child: Text('All')),
                         DropdownMenuItem(
-                            value: 'category1', child: Text('Pangngalan')),
+                            value: 'category1', child: Text('Basics')),
                         DropdownMenuItem(
-                            value: 'category2', child: Text('Kilos')),
+                            value: 'category2', child: Text('Action')),
                         DropdownMenuItem(
-                            value: 'category3', child: Text('Direksyon')),
+                            value: 'category3', child: Text('Greetings')),
                       ],
                       onChanged: (value) {
                         setState(() {
@@ -523,9 +523,9 @@ class _UlayawMainPageState extends State<UlayawMainPage>
                   controller: _tabController,
                   tabs: const [
                     Tab(icon: Icon(Icons.select_all)),
-                    Tab(icon: Icon(Icons.groups)),
-                    Tab(icon: Icon(Icons.notification_important)),
+                    Tab(icon: Icon(Icons.heart_broken)),
                     Tab(icon: Icon(Icons.star)),
+                    Tab(icon: Icon(Icons.waving_hand)),
                   ],
                   labelColor: Colors.black,
                   unselectedLabelColor: Colors.grey,
