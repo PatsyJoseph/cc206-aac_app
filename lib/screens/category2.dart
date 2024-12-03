@@ -27,7 +27,7 @@ class Category2 extends StatelessWidget {
         buttons: buttons,
         category: 'category2',
         onButtonPressed: onButtonPressed,
-        onButtonLongPress: onButtonLongPress,
+        onButtonLongPressed: onButtonLongPress,
         animationControllers: animationControllers,
         isDeleteMode: isDeleteMode,
       ),

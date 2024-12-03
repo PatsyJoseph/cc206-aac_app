@@ -1,3 +1,6 @@
+// user_service.dart handles the data including the username and password entered
+// by the user and store it in firestore.
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';

@@ -1,4 +1,7 @@
-import 'package:Ulayaw/firebase/user_provider.dart';
+// the login_page.dart is responsible for the form allowing user to input
+// their login credentials including their username and password.
+
+import 'package:Tinig/firebase/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

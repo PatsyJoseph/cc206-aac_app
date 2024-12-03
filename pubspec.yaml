@@ -1,4 +1,4 @@
-name: Ulayaw
+name: Tinig
 description: "An Augmentative and Alternative Communication Application." # Brief project description
 publish_to: 'none' # Set to 'none' to avoid publishing the package publicly
 
@@ -34,7 +34,7 @@ flutter:
   uses-material-design: true # Enable Material Design icons and components
 
   assets:
-    - assets/about_page/trial.jpg
+    - assets/about_page/
     - assets/trial.jpg
     - assets/trial.png
     - assets/default_avatar.png
@@ -43,3 +43,4 @@ flutter:
     - assets/audio/
     - assets/officiallogo.png
     - assets/logo2.png
+    - assets/logo.png

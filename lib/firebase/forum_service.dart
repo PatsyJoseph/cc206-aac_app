@@ -1,4 +1,7 @@
-import 'package:Ulayaw/features/forum.dart';
+// forum_service.dart is capable of handling the posts and comments enabling
+// users to add and delete them. It also fetches the contents.
+
+import 'package:Tinig/features/forum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +10,7 @@ import 'user_provider.dart';
 class ForumService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Handles the adding of post to firestore
   Future<void> addPost(BuildContext context, String content) async {
     final currentUser =
         Provider.of<UserProvider>(context, listen: false).currentUser;
@@ -34,6 +38,7 @@ class ForumService {
     }
   }
 
+  // Handles the adding of comments to firestore
   Future<void> addComment(
       BuildContext context, String postId, String commentContent) async {
     final currentUser =
@@ -68,6 +73,7 @@ class ForumService {
     }
   }
 
+  // Handles the fetching of posts along with the comments from firestore
   Future<List<Post>> getPosts() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('posts').get();
@@ -114,7 +120,7 @@ class ForumService {
     }
   }
 
-  // delete post
+  // Handles the deletion of post and comments from firestore
   Future<void> deletePost(BuildContext context, String postId) async {
     final currentUser =
         Provider.of<UserProvider>(context, listen: false).currentUser;

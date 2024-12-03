@@ -1,11 +1,11 @@
-import 'package:Ulayaw/main.dart'; // Ensure this path is correct
+import 'package:Tinig/main.dart'; // Ensure this path is correct
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const Ulayaw());
+    await tester.pumpWidget(const Tinig());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

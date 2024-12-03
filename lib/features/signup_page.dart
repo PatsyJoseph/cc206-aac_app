@@ -154,6 +154,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     ),
                     obscureText: !_isPasswordVisible,
                   ),
+                  // Issues a warning if criteria is not met
                   if (!_isPasswordLengthValid)
                     Text(
                       'Password must be at least 8 characters long',

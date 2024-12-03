@@ -8,18 +8,18 @@ class CategoryView extends StatelessWidget {
   final List<CategoryButtonItem> buttons;
   final String category;
   final Function(int) onButtonPressed;
-  final Function(int)? onButtonLongPress;
   final List<AnimationController> animationControllers;
   final bool isDeleteMode;
 
+  // Change 1: The parameter onButtonLongPress is now optional and renamed to onButtonLongPressed
   const CategoryView({
     Key? key,
     required this.buttons,
     required this.category,
     required this.onButtonPressed,
-    this.onButtonLongPress,
     required this.animationControllers,
     required this.isDeleteMode,
+    Function(int p1)? onButtonLongPressed, // Optional and renamed parameter
   }) : super(key: key);
 
   @override
@@ -58,18 +58,28 @@ class CategoryView extends StatelessWidget {
               child: Stack(
                 children: [
                   GestureDetector(
-                    onTap: () => onButtonPressed(originalIndex),
-                    onLongPress: onButtonLongPress != null
-                        ? () => onButtonLongPress!(originalIndex)
-                        : null,
-                    child: Container(
+                    onTap: () {
+                      if (isDeleteMode) {
+                        button.isSelected = !button
+                            .isSelected; // Only toggle for deletion in delete mode
+                      }
+                      onButtonPressed(
+                          originalIndex); // Trigger the main action (e.g., play sound)
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(
+                          milliseconds: 300), // Optional for smooth transition
                       decoration: BoxDecoration(
                         color: button.isSelected
-                            ? Colors.blue.withOpacity(0.2)
-                            : Colors.grey.shade200,
+                            ? Colors
+                                .grey.shade200 // Highlight color when selected
+                            : Colors.grey.shade200, // Default color
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Colors.grey.shade300,
+                          color: button.isSelected
+                              ? Colors
+                                  .grey.shade300 // Border color when selected
+                              : Colors.grey.shade300, // Default border color
                           width: 1,
                         ),
                       ),
@@ -94,6 +104,19 @@ class CategoryView extends StatelessWidget {
         );
       },
     );
+  }
+
+  // Change 3: A new method `_handleLongPress` has been added to manage long press logic
+  void _handleLongPress(int index) {
+    final button = buttons[index];
+
+    if (isDeleteMode) {
+      // In delete mode, toggle the selection state
+      button.isSelected = !button.isSelected;
+    } else {
+      // In normal mode, you can implement other long press behavior (e.g., highlighting the button)
+      button.isSelected = !button.isSelected;
+    }
   }
 
   Widget _buildButtonContent(CategoryButtonItem button) {

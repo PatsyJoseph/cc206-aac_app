@@ -62,28 +62,6 @@ class NavDrawer extends StatelessWidget {
                       Navigator.pushNamed(context, '/forum');
                     },
                   ),
-
-                  // Tutorial Navigation
-                  _buildDrawerItem(
-                    icon: Icons.help_outline,
-                    title: 'Tutorial',
-                    isActive: activeNav == '/tutorial',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/tutorial');
-                    },
-                  ),
-
-                  // About Navigation
-                  _buildDrawerItem(
-                    icon: Icons.info_outline,
-                    title: 'About',
-                    isActive: activeNav == '/about',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/about');
-                    },
-                  ),
                 ],
               ),
             ),

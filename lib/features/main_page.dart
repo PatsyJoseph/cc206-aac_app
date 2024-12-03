@@ -29,20 +29,18 @@ import '../screens/category2.dart';
 import '../screens/category3.dart';
 import '../data/predefinedButtons.dart';
 
-class UlayawMainPage extends StatefulWidget {
+class TinigMainPage extends StatefulWidget {
   final String loggedInUser; // Add this to accept the logged-in user
 
-  const UlayawMainPage({Key? key, required this.loggedInUser})
-      : super(key: key);
+  const TinigMainPage({Key? key, required this.loggedInUser}) : super(key: key);
 
   @override
-  _UlayawMainPageState createState() => _UlayawMainPageState();
+  _TinigMainPageState createState() => _TinigMainPageState();
 }
 
-class _UlayawMainPageState extends State<UlayawMainPage>
+class _TinigMainPageState extends State<TinigMainPage>
     with TickerProviderStateMixin {
   late String _loggedInUser;
-  // late Future<List<CategoryButtonItem>> _buttonsFuture;
 
   // Controller for tab navigation: This controls switching between different categories
   late TabController _tabController;
@@ -66,9 +64,10 @@ class _UlayawMainPageState extends State<UlayawMainPage>
   final TextEditingController _labelController = TextEditingController();
 
   // Button Data: Stores all button data and controls button press animation
-  // List<CategoryButtonItem> predefinedButtons = [];
   List<CategoryButtonItem> customButtons = [];
   List<AnimationController> _animationControllers = [];
+
+  Future<List<CategoryButtonItem>>? _buttonsFuture;
 
   // Load data from JSON
   Future<List<CategoryButtonItem>> loadPredefinedButtons() async {
@@ -287,10 +286,18 @@ class _UlayawMainPageState extends State<UlayawMainPage>
                       const Text('Cancel', style: TextStyle(color: Colors.red)),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.of(context).pop();
-                    _addNewButton();
-                    setState(() {});
+                    // Add new button and reset the label
+                    await _addNewButton();
+
+                    // Reset the label controller to clear the field
+                    _labelController.clear();
+
+                    // Trigger the UI to reload by resetting the _buttonsFuture
+                    setState(() {
+                      _buttonsFuture = null; // This will trigger the reload
+                    });
                   },
                   child:
                       const Text('Add', style: TextStyle(color: Colors.green)),
@@ -323,20 +330,41 @@ class _UlayawMainPageState extends State<UlayawMainPage>
       final String soundPath =
           '${directory.path}/sound_${DateTime.now().millisecondsSinceEpoch}.mp3';
 
+      // Save image and sound files
       await newItemImage!.copy(imagePath);
       await File(newItemSound!).copy(soundPath);
 
+      // Add new button to the customButtons list
+      customButtons.add(CategoryButtonItem(
+        id: 'custom_${customButtons.length}',
+        imagePath: imagePath, // Image path
+        soundPath: soundPath, // Sound path
+        text: buttonLabel, // Text for the button
+        category: selectedCategory,
+      ));
+
+      // Save updated buttons to SharedPreferences
+      await _saveButtons();
+
+      // Reset Future and trigger UI update
       setState(() {
-        customButtons.add(CategoryButtonItem(
-          id: 'custom_${customButtons.length}',
-          imagePath: imagePath, // Image path
-          soundPath: soundPath, // Sound path
-          text: buttonLabel, // Text for the button
-          category: selectedCategory,
-        ));
+        _buttonsFuture = null; // Reset Future to trigger reload
       });
-      _saveButtons();
-      _setupButtonAnimations();
+
+      // Provide feedback to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('New button added successfully.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please provide both an image and a sound.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -489,7 +517,8 @@ class _UlayawMainPageState extends State<UlayawMainPage>
       // Side navigation drawer: Contains the navigation to tutorial_page.dart and about_page.dart
       drawer: NavDrawer(activeNav: 'Main'),
       body: FutureBuilder<List<CategoryButtonItem>>(
-        future: loadButtons(), // Load data when building the body
+        future: _buttonsFuture ??=
+            loadButtons(), // Load data when building the body
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator()); // While loading
@@ -616,6 +645,8 @@ class _UlayawMainPageState extends State<UlayawMainPage>
 
 // This allows the user to select or toggle buttons for deletion
   void _toggleDeleteSelection(int index) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     List<CategoryButtonItem> allButtons = await loadButtons();
     // using all buttons to avoid out of bounds access to index
     if (index >= 0 && index < allButtons.length) {
@@ -635,7 +666,12 @@ class _UlayawMainPageState extends State<UlayawMainPage>
           }
         });
       } else {
-        print('Predefined button cannot be selected or toggled for deletion');
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text('Predefined buttons cannot be selected or deleted.'),
+            duration: Duration(seconds: 2), // Adjust duration as needed
+          ),
+        );
       }
     } else {
       print(
@@ -666,7 +702,15 @@ class _UlayawMainPageState extends State<UlayawMainPage>
     // Clear the selected item IDs after deletion
     setState(() {
       selectedItemIds.clear();
+      _buttonsFuture = null;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Selected buttons deleted successfully.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   Future<void> _showDeleteConfirmationDialog() async {

@@ -27,7 +27,7 @@ class All extends StatelessWidget {
       buttons: buttons,
       category: 'all',
       onButtonPressed: onButtonPressed,
-      onButtonLongPress: onButtonLongPress,
+      onButtonLongPressed: onButtonLongPress,
       animationControllers: animationControllers,
       isDeleteMode: isDeleteMode,
     );

@@ -1,3 +1,6 @@
+// changepassword.dart allows user to change their password and updating it in
+// Firestore
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
@@ -17,7 +20,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   bool _isConfirmPasswordVisible =
       false; // To toggle visibility of confirm password
   bool _isPasswordMatch = true; // To check if passwords match
-  bool _isPasswordLengthValid = true;
+  bool _isPasswordLengthValid =
+      true; // To check the character length meets the criteria
 
   void _validatePasswordLength() {
     setState(() {

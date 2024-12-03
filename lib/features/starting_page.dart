@@ -1,4 +1,4 @@
-import 'package:Ulayaw/features/login_page.dart';
+import 'package:Tinig/features/login_page.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 

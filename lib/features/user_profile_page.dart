@@ -1,12 +1,12 @@
-import 'dart:io'; // Add this import to use File class
+import 'dart:io';
 
-import 'package:Ulayaw/firebase/user_provider.dart';
+import 'package:Tinig/firebase/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../features/aboutUs.dart'; // Import the About page
+import 'about_page.dart'; // Import the About page
 import '../features/tutorial_page.dart'; // Import the Tutorial page
-import '../screens/nav.dart'; // Import NavDrawer file here
+import '../screens/nav.dart'; // Import NavDrawer
 
 class UserProfilePage extends StatefulWidget {
   final String currentUser;
@@ -22,6 +22,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    // gets the current user
     final username = context.watch<UserProvider>().currentUser;
 
     return Scaffold(
@@ -52,22 +53,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Profile Picture (square)
-                GestureDetector(
-                  onTap: _pickImage, // Function to pick a new profile picture
-                  child: Container(
-                    width: 70.0,
-                    height: 70.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      image: _profileImagePath != null
-                          ? DecorationImage(
-                              image: FileImage(File(_profileImagePath!)),
-                              fit: BoxFit.cover,
-                            )
-                          : const DecorationImage(
-                              image: AssetImage('assets/officiallogo.png'),
-                              fit: BoxFit.cover,
-                            ),
+                Container(
+                  width: 70.0,
+                  height: 70.0,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    image: DecorationImage(
+                      image: AssetImage('assets/officiallogo.png'),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -203,10 +196,5 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ),
       ),
     );
-  }
-
-  // Function to pick a profile image
-  Future<void> _pickImage() async {
-    // Your image picking logic goes here
   }
 }

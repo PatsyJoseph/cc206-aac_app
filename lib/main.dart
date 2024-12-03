@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'features/starting_page.dart';
 import 'features/main_page.dart';
 import 'features/tutorial_page.dart';
-import 'features/aboutUs.dart';
+import 'features/about_page.dart';
 import 'features/login_page.dart';
 import 'features/changepassword_form.dart';
 import 'features/signup_page.dart';
@@ -30,7 +30,7 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => UserProvider(),
-      child: Ulayaw(),
+      child: Tinig(),
     ),
   );
 }
@@ -39,8 +39,8 @@ void main() async {
 
 /// This class sets up the MaterialApp with basic configurations like
 /// the title, theme, and initial screen.
-class Ulayaw extends StatelessWidget {
-  const Ulayaw({super.key});
+class Tinig extends StatelessWidget {
+  const Tinig({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class Ulayaw extends StatelessWidget {
         '/main': (context) {
           final loggedInUser =
               ModalRoute.of(context)?.settings.arguments as String? ?? '';
-          return UlayawMainPage(
+          return TinigMainPage(
               loggedInUser: loggedInUser); // Pass loggedInUser here
         },
         // Initial route as starting page

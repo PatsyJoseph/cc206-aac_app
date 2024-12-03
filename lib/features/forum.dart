@@ -1,4 +1,8 @@
-import 'package:Ulayaw/firebase/user_provider.dart';
+// forum.dart is the page for allowing users to interact and communicate
+// with the community by writing posts and comments. They are also allowed to
+// delete their own posts.
+
+import 'package:Tinig/firebase/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
