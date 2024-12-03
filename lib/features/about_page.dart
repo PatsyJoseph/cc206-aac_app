@@ -121,7 +121,7 @@ class Ulalayaw extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/logo.png',
+              'assets/officiallogo.png',
               width: 200,
               height: 200,
             ),
