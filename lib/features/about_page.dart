@@ -127,7 +127,7 @@ class Ulalayaw extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             Text(
-              "Tnig is a Project Based Alternative and Augmentative Communication (AAC) Application centered around the Filipino Language, created by 3rd Year Computer Science students of West Visayas State University. The Concept of Ulalayaw came from the Word's meaning, which refers to being in a state of closeness to a person, and provides support and companionship to said person",
+              "Tinig is a Project Based Alternative and Augmentative Communication (AAC) Application centered around the Filipino Language, created by 3rd Year Computer Science students of West Visayas State University. The Concept of Ulalayaw came from the Word's meaning, which refers to being in a state of closeness to a person, and provides support and companionship to said person",
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black,
