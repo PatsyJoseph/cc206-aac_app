@@ -38,7 +38,7 @@ class _TutorialPageState extends State<TutorialPage> {
         'title': 'Join the Community!',
         'description':
             'Post your thoughts, experiences, and questions. Comment, engage, and build community through meaningful conversations. ',
-        'icon': 'assets/images/tCard3.png',
+        'icon': 'assets/images/tcard4.png',
       },
     ];
 
